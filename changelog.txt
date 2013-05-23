@@ -1,0 +1,4 @@
+[B]Version 1.0.0[/B] - 23 May 2013
+Initial release of Beam Ebooks  plugin
+- functionality fully implemented
+- t.b.d. configurability
