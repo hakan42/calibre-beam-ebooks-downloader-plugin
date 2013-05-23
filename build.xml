@@ -1,0 +1,43 @@
+<project name="beam-ebooks-downloader-plugin" default="install">
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+
+	<!-- Calibre packaging and installing -->
+	<target name="obtain-version">
+		<loadfile property="init_py" srcfile="${basedir}/__init__.py" />
+		<propertyregex property="version" input="${init_py}" regexp="( version = \()([^\,]*), ([^\,]*), ([^\)]*)\)" select="\2.\3.\4" />
+	</target>
+
+	<target name="package" depends="obtain-version">
+		<zip basedir="${basedir}" destfile="build/${ant.project.name}-${version}.zip">
+			<include name="*.txt" />
+			<include name="*.py" />
+			<include name="images" />
+		</zip>
+	</target>
+
+	<target name="install" depends="package">
+		<exec executable="calibre-customize" failonerror="true">
+			<arg value="-r" />
+			<arg value="Beam EBooks Downloader" />
+		</exec>
+
+		<exec executable="calibre-customize" failonerror="true">
+			<arg value="-a" />
+			<arg value="build/${ant.project.name}-${version}.zip" />
+		</exec>
+	</target>
+
+	<target name="start" depends="install">
+		<exec executable="calibre-debug">
+			<arg value="-g" />
+		</exec>
+	</target>
+
+	<target name="test" depends="install">
+		<exec executable="calibre-debug" failonerror="true">
+			<arg value="-e" />
+			<arg value="__init__.py" />
+		</exec>
+	</target>
+</project>
