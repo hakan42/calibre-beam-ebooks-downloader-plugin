@@ -26,16 +26,20 @@ def migrate_config_if_required():
     if schema_version != DEFAULT_SCHEMA_VERSION:
         plugin_prefs[SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
 
-
 class PrefsFacade():
 
-    DUMMY = 'DummyInfoForTesting'
+    HOSTNAME = 'Hostname'
 
     def __init__(self, passed_db=None):
         self.default_prefs = plugin_prefs.defaults
         self.libraryid = None
         self.plugin_prefs = plugin_prefs
         self.passed_db = passed_db
+        
+        host_name = self.__getitem__(self.HOSTNAME)
+        if host_name is None:
+            self.__setitem__(self.HOSTNAME, 'http://aldiko.beam-ebooks.de')
+            self.save()
 
 
     def _get_prefs(self):
@@ -44,11 +48,10 @@ class PrefsFacade():
 
     def __getitem__(self, k):
         prefs = self._get_prefs()
-        # if k not in prefs:
-        # pulls from default_prefs.defaults automatically if not set
-        # in default_prefs
-        # return self.default_prefs[k]
-        return prefs[k]
+        if k in prefs:
+            return prefs[k]
+        else:
+            return None
 
 
     def __setitem__(self, k, v):
