@@ -7,9 +7,9 @@ __copyright__ = '2013, Hakan Tandogan <hakan at gurkensalat.com>'
 __docformat__ = 'restructuredtext en'
 
 # The class that all Interface Action plugin wrappers must inherit from
-from calibre.customize import InterfaceActionBase
+from calibre.gui2.actions import InterfaceAction
 
-class BeamEbooksDownloaderAction(InterfaceActionBase):
+class BeamEbooksDownloaderAction(InterfaceAction):
 
     def apply_settings(self):
 

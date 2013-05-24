@@ -7,7 +7,7 @@ __copyright__ = '2013, Hakan Tandogan <hakan at gurkensalat.com>'
 __docformat__ = 'restructuredtext en'
 
 
-from PyQt4.Qt import (Qt, QWidget)
+from PyQt4.Qt import (Qt, QWidget, QHBoxLayout, QLabel, QLineEdit)
 
 
 class ConfigWidget(QWidget):
@@ -15,3 +15,15 @@ class ConfigWidget(QWidget):
     def __init__(self, plugin_action):
         QWidget.__init__(self)
         self.plugin_action = plugin_action
+
+        self.l = QHBoxLayout()
+        self.setLayout(self.l)
+
+        self.label = QLabel('Hello world &message:')
+        self.l.addWidget(self.label)
+
+        self.msg = QLineEdit(self)
+        # self.msg.setText(prefs['hello_world_msg'])
+        self.msg.setText('Blurch Furbl')
+        self.l.addWidget(self.msg)
+        self.label.setBuddy(self.msg)
