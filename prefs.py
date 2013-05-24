@@ -28,7 +28,11 @@ def migrate_config_if_required():
 
 class PrefsFacade():
 
-    HOSTNAME = 'Hostname'
+    URLBASE = 'Urlbase'
+
+    USERNAME = 'Username'
+
+    PASSWORD = 'Password'
 
     def __init__(self, passed_db=None):
         self.default_prefs = plugin_prefs.defaults
@@ -36,9 +40,9 @@ class PrefsFacade():
         self.plugin_prefs = plugin_prefs
         self.passed_db = passed_db
         
-        host_name = self.__getitem__(self.HOSTNAME)
-        if host_name is None:
-            self.__setitem__(self.HOSTNAME, 'http://aldiko.beam-ebooks.de')
+        url_base = self.__getitem__(self.URLBASE)
+        if url_base is None:
+            self.__setitem__(self.URLBASE, 'http://aldiko.beam-ebooks.de/')
             self.save()
 
 

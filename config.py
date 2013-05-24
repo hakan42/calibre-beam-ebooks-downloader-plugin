@@ -7,7 +7,7 @@ __copyright__ = '2013, Hakan Tandogan <hakan at gurkensalat.com>'
 __docformat__ = 'restructuredtext en'
 
 
-from PyQt4.Qt import (Qt, QWidget, QHBoxLayout, QLabel, QLineEdit)
+from PyQt4.Qt import (Qt, QWidget, QGridLayout, QLabel, QLineEdit)
 
 
 class ConfigWidget(QWidget):
@@ -16,23 +16,49 @@ class ConfigWidget(QWidget):
         QWidget.__init__(self)
         self.plugin_action = plugin_action
 
-        self.l = QHBoxLayout()
-        self.setLayout(self.l)
+        from calibre_plugins.beam_ebooks_downloader.prefs import prefs
 
-        self.label = QLabel('Hello world &message:')
-        self.l.addWidget(self.label)
+        print 'My Prefs are (%s)' % (prefs)
+        print '    methods are (%s)' % (dir(prefs))
 
-        self.msg = QLineEdit(self)
-        # self.msg.setText(prefs['hello_world_msg'])
-        self.msg.setText('Blurch Furbl')
-        self.l.addWidget(self.msg)
-        self.label.setBuddy(self.msg)
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+
+        self.labelUrlBase = QLabel('URL:')
+        self.layout.addWidget(self.labelUrlBase, 0, 0)
+
+        self.urlbase = QLineEdit(self)
+        if prefs.__getitem__(prefs.URLBASE) is not None:
+            self.urlbase.setText(prefs.__getitem__(prefs.URLBASE))
+        self.urlbase.setReadOnly(True)
+        self.layout.addWidget(self.urlbase, 0, 1)
+        self.labelUrlBase.setBuddy(self.urlbase)
+
+        self.labelUserName = QLabel('Username:')
+        self.layout.addWidget(self.labelUserName, 1, 0)
+
+        self.username = QLineEdit(self)
+        if prefs.__getitem__(prefs.USERNAME) is not None:
+            self.username.setText(prefs.__getitem__(prefs.USERNAME))
+        self.layout.addWidget(self.username, 1, 1)
+        self.labelUserName.setBuddy(self.username)
+
+        self.labelPassword = QLabel('Password')
+        self.layout.addWidget(self.labelPassword, 2, 0)
+
+        self.password = QLineEdit(self)
+        if prefs.__getitem__(prefs.PASSWORD) is not None:
+            self.password.setText(prefs.__getitem__(prefs.PASSWORD))
+        self.layout.addWidget(self.password, 2, 1)
+        self.labelPassword.setBuddy(self.password)
+
 
     def save_settings(self):
         from calibre_plugins.beam_ebooks_downloader.prefs import prefs
 
         # Copy any data necessary into the prefs object
-        prefs.__setitem__(prefs.DUMMY, '%s' % self.msg.text())
+        prefs.__setitem__(prefs.USERNAME, '%s' % self.username.text())
+        prefs.__setitem__(prefs.PASSWORD, '%s' % self.password.text())
 
         # And save it...
         prefs.save()
