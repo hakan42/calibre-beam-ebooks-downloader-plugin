@@ -59,6 +59,8 @@ class ConfigWidget(QWidget):
         # Copy any data necessary into the prefs object
         prefs.__setitem__(prefs.USERNAME, '%s' % self.username.text())
         prefs.__setitem__(prefs.PASSWORD, '%s' % self.password.text())
+        # TODO proper hashing somewhere, maybe even in 'migrate'
+        prefs.__setitem__(prefs.HASHED_PASSWORD, '%s' % self.password.text())
 
         # And save it...
         prefs.save()

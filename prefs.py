@@ -34,6 +34,8 @@ class PrefsFacade():
 
     PASSWORD = 'Password'
 
+    HASHED_PASSWORD = 'HashedPassword'
+
     def __init__(self, passed_db=None):
         self.default_prefs = plugin_prefs.defaults
         self.libraryid = None
