@@ -29,6 +29,8 @@ def migrate_config_if_required():
 
 class PrefsFacade():
 
+    DUMMY = 'DummyInfoForTesting'
+
     def __init__(self, passed_db=None):
         self.default_prefs = plugin_prefs.defaults
         self.libraryid = None

@@ -27,3 +27,12 @@ class ConfigWidget(QWidget):
         self.msg.setText('Blurch Furbl')
         self.l.addWidget(self.msg)
         self.label.setBuddy(self.msg)
+
+    def save_settings(self):
+        from calibre_plugins.beam_ebooks_downloader.prefs import prefs
+
+        # Copy any data necessary into the prefs object
+        prefs.__setitem__(prefs.DUMMY, '%s' % self.msg.text())
+
+        # And save it...
+        prefs.save()
