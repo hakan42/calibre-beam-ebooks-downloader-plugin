@@ -22,3 +22,11 @@ class Downloader(InterfaceActionBase):
 
     # Minium is 0.9.23 for the CLI support from this version on
     minimum_calibre_version = (0, 9, 23)
+
+
+    def cli_main(self,argv):
+        from optparse import OptionParser      
+
+        print 'Here I Am'
+
+        pass

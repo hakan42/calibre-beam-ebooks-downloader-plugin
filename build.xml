@@ -8,7 +8,13 @@
 		<propertyregex property="version" input="${init_py}" regexp="( version = \()([^\,]*), ([^\,]*), ([^\)]*)\)" select="\2.\3.\4" />
 	</target>
 
-	<target name="package" depends="obtain-version">
+	<target name="obtain-plugin-name">
+		<loadfile property="init_py" srcfile="${basedir}/__init__.py" />
+		<!-- <propertyregex property="plugin.name" input="${init_py}" regexp="( name = \"\")" select="\2.\3.\4" /> -->
+		<property name="plugin.name" value="Beam EBooks Downloader" />
+	</target>
+
+	<target name="package" depends="obtain-version,obtain-plugin-name">
 		<zip basedir="${basedir}" destfile="build/${ant.project.name}-${version}.zip">
 			<include name="*.txt" />
 			<include name="*.py" />
@@ -19,7 +25,7 @@
 	<target name="install" depends="package">
 		<exec executable="calibre-customize" failonerror="true">
 			<arg value="-r" />
-			<arg value="Beam EBooks Downloader" />
+			<arg value="${plugin.name}" />
 		</exec>
 
 		<exec executable="calibre-customize" failonerror="true">
@@ -40,4 +46,23 @@
 			<arg value="__init__.py" />
 		</exec>
 	</target>
+
+	<target name="test-plugin-cmdline-default" depends="install">
+		<exec executable="calibre-debug" failonerror="true">
+			<arg value="--run-plugin" />
+			<arg value="${plugin.name}" />
+		</exec>
+	</target>
+
+	<target name="test-plugin-cmdline-help" depends="install">
+		<exec executable="calibre-debug" failonerror="true">
+			<arg value="--run-plugin" />
+			<arg value="${plugin.name}" />
+			<arg value="--help" />
+		</exec>
+	</target>
+
+	<target name="test-plugin-cmdline" depends="test-plugin-cmdline-help,test-plugin-cmdline-default">
+	</target>
+
 </project>
