@@ -9,22 +9,40 @@ __docformat__ = 'restructuredtext en'
 
 from calibre.utils.config import JSONConfig
 
-# Set defaults used by all.  Library specific settings continue to
-# take from here.
-default_prefs = {}
-# default_prefs['personal.ini'] = get_resources('plugin-example.ini')
+STORE_SCHEMA_VERSION = 'SchemaVersion'
+DEFAULT_SCHEMA_VERSION = 1.0
 
 # This is where all preferences for this plugin will be stored
 plugin_prefs = JSONConfig('plugins/Beam EBooks Downloader')
 
+# Set defaults
+plugin_prefs.defaults['hello_world_msg'] = 'Hello, World!'
+
+
+def migrate_config_if_required():
+    # Contains code for migrating versions of json schema
+    # Make sure we store our schema version in the file
+    schema_version = plugin_prefs.get(STORE_SCHEMA_VERSION, 0)
+    if schema_version != DEFAULT_SCHEMA_VERSION:
+        plugin_prefs[STORE_SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
+
 
 class PrefsFacade():
 
-    def __init__(self,passed_db=None):
-        self.default_prefs = default_prefs
+    def __init__(self, passed_db=None):
+        self.default_prefs = plugin_prefs.defaults
         self.libraryid = None
-        self.current_prefs = None
-        self.passed_db=passed_db
+        self.plugin_prefs = plugin_prefs
+        self.passed_db = passed_db
+
+
+    def save(self):
+        print "Saving myself"
+        plugin_prefs.commit()
+
+
+# Ensure our config gets migrated
+migrate_config_if_required()
 
 # Return myself
 prefs = PrefsFacade()
