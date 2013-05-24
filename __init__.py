@@ -18,7 +18,7 @@ class Downloader(InterfaceActionBase):
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'Hakan Tandogan'
 
-    version = (1, 0, 0)
+    version = (0, 5, 0)
 
     # Minium is 0.9.23 for the CLI support from this version on
     minimum_calibre_version = (0, 9, 23)
