@@ -11,5 +11,9 @@ from calibre.customize import InterfaceActionBase
 
 class BeamEbooksDownloaderAction(InterfaceActionBase):
 
-    # Stuff starts here....
-    pass
+    def apply_settings(self):
+
+        print 'Appliying Settings'
+
+        # No need to do anything with prefs here, but we could.
+        prefs
