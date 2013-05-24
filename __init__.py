@@ -31,6 +31,7 @@ class Downloader(InterfaceActionBase):
         '''
         return True
 
+
     def config_widget(self):
         '''
         Implement this method and :meth:`save_settings` in your plugin to
@@ -41,11 +42,10 @@ class Downloader(InterfaceActionBase):
         immediately after the user clicks OK. Changes are applied if and only
         if the method returns True.
         '''
-        # if self.actual_plugin_:
-            # return ConfigWidget(self.actual_plugin_, grhttp)
-            # return None
+        if self.actual_plugin_:
+            from calibre_plugins.beam_ebooks_downloader.config import ConfigWidget
+            return ConfigWidget(self.actual_plugin_)
 
-        return ('Not Implemented Yet', 'Too lazy to do so')
 
     def save_settings(self, config_widget):
         '''
@@ -62,7 +62,7 @@ class Downloader(InterfaceActionBase):
             ac.apply_settings()
 
 
-    def cli_main(self,argv):
+    def cli_main(self, argv):
         from optparse import OptionParser      
 
         print 'Here I Am'
