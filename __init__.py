@@ -17,6 +17,7 @@ class Downloader(InterfaceActionBase):
     description = _('UI plugin to download ebooks from Beam Ebooks.')
     supported_platforms = ['windows', 'osx', 'linux']
     author = 'Hakan Tandogan'
+    can_be_disabled = True
 
     version = (0, 5, 0)
 
