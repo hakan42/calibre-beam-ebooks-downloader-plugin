@@ -13,3 +13,18 @@ from calibre.utils.config import JSONConfig
 # take from here.
 default_prefs = {}
 # default_prefs['personal.ini'] = get_resources('plugin-example.ini')
+
+# This is where all preferences for this plugin will be stored
+plugin_prefs = JSONConfig('plugins/Beam EBooks Downloader')
+
+
+class PrefsFacade():
+
+    def __init__(self,passed_db=None):
+        self.default_prefs = default_prefs
+        self.libraryid = None
+        self.current_prefs = None
+        self.passed_db=passed_db
+
+# Return myself
+prefs = PrefsFacade()

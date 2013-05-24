@@ -63,10 +63,19 @@ class Downloader(InterfaceActionBase):
 
 
     def cli_main(self, argv):
+        from calibre.utils.config import prefs as calibre_prefs
+        from calibre.library import db
         from optparse import OptionParser      
+
+        from calibre_plugins.beam_ebooks_downloader.prefs import prefs
 
         print 'Here I Am'
 
-        self.save_settings(None)
+        print 'My Prefs are (%s)' % (prefs)
+        print '    methods are (%s)' % (dir(prefs))
+        print '    library id is (%s)' % (prefs.libraryid)
+
+        print 'Calibre Prefs are (%s)' % (calibre_prefs)
+        print '    methods are (%s)' % (dir(calibre_prefs))
 
         pass
