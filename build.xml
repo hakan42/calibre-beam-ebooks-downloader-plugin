@@ -14,6 +14,10 @@
 		<property name="plugin.name" value="Beam EBooks Downloader" />
 	</target>
 
+	<target name="clean" depends="obtain-version,obtain-plugin-name">
+		 <!-- TODO remove build directory... -->
+	</target>
+
 	<target name="package" depends="obtain-version,obtain-plugin-name">
 		<zip basedir="${basedir}" destfile="build/${ant.project.name}-${version}.zip">
 			<include name="*.txt" />
