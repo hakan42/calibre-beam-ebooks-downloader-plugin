@@ -87,8 +87,6 @@ class Downloader(InterfaceActionBase):
             print "Failed to log in..."
         else:
             print "Parsing document tree now..."
-
-        # downloader.recursive_descent('/aldiko/bibuebersicht.php5?user=4711')
-        # downloader.recursive_descent('/aldiko/pakete.php5?user=4711')
+            downloader.recursive_descent()
 
         pass
