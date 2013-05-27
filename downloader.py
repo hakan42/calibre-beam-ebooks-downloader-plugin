@@ -99,6 +99,10 @@ class BeamEbooksDownloader():
                 if match: 
                     continue
 
+                match = re.search('\.jpg$', href)
+                if match:
+                    continue
+
                 match = re.search('\/about\.php$', href)
                 if match: 
                     continue
