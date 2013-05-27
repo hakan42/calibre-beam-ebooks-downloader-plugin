@@ -87,6 +87,10 @@ class Downloader(InterfaceActionBase):
             print "Failed to log in..."
         else:
             print "Parsing document tree now..."
-            downloader.recursive_descent()
+            # Tempoarily...
+            # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/aldiko/bibuebersicht.php5?user=" + downloader.beamid)
+            # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/aldiko/pakete.php5?user=" + downloader.beamid)
+            downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/aldiko/paket.php5?paketnr=47799")
+            downloader.download_ebooks()
 
         pass

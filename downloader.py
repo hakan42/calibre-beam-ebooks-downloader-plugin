@@ -30,6 +30,8 @@ class BeamEbooksDownloader():
 
         self.already_visited_links = []
 
+        self.downloadable_ebooks = []
+
         self.browser = Browser(enable_developer_tools=True)
 
     def login(self):
@@ -37,6 +39,7 @@ class BeamEbooksDownloader():
         self.successful_login = False
 
         self.already_visited_links = []
+        self.downloadable_ebooks = []
 
         url  = self.urlbase + "/aldiko/cookisetzen.php"
         print "  URL: '%s'" % (url)
@@ -127,7 +130,8 @@ class BeamEbooksDownloader():
                     continue
 
                 match = re.search('\/download\.php5\?.*$', href)
-                if match: 
+                if match:
+                    self.downloadable_ebooks.append(href)
                     continue
 
                 print "        Seems to be a followable link ('%s')" % (href)
@@ -137,3 +141,9 @@ class BeamEbooksDownloader():
         if further_descend:
             for link in links_to_visit:
                 self.recursive_descent(link)
+
+    # Now, mirror all ebooks encountered in the loop above
+    def download_ebooks(self):
+
+        for url in self.downloadable_ebooks:
+            print "Would have to download: '%s'" % (url)
