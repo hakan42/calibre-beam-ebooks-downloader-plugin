@@ -25,9 +25,15 @@ class BeamEbooksDownloader():
         self.username = prefs.__getitem__(prefs.USERNAME)
         self.password = prefs.__getitem__(prefs.PASSWORD)
 
+        self.beamid = None
+        self.successful_login = False
+
         self.browser = Browser(enable_developer_tools=True)
 
     def login(self):
+        self.beamid = None
+        self.successful_login = False
+
         url  = self.urlbase + "/aldiko/cookisetzen.php"
         print "  URL: '%s'" % (url)
         
@@ -49,10 +55,20 @@ class BeamEbooksDownloader():
         self.browser.submit()
 
         # print "New Content: '%s'" % (self.browser.html)
-        soup = BeautifulSoup(self.browser.html)
+        # soup = BeautifulSoup(self.browser.html)
         # print "New Soup: '%s'" % (soup)
 
-        print "Cookies: '%s'" % (self.browser.cookies)
+        # print "Cookies: '%s'" % (self.browser.cookies)
+        for cookie in self.browser.cookies:
+            # print "  C: '%s'" % (cookie)
+            if hasattr(cookie, 'name'):
+                if hasattr(cookie, 'value'):
+                    if cookie.name == 'beamid':
+                        self.beamid = cookie.value
+                        # TODO should we verify that the beamid is numeric???
+                        self.successful_login = True
+
+        print "Beam ID: '%s', '%s'" % (self.beamid, self.successful_login)
 
     def recursive_descent(self, page = None):
         if page is None:
