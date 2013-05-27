@@ -8,7 +8,7 @@ __docformat__ = 'restructuredtext en'
 
 
 #
-import urllib2
+import re
 from calibre.ebooks.BeautifulSoup import BeautifulSoup
 from calibre.web.jsbrowser.browser import Browser
 
@@ -70,15 +70,52 @@ class BeamEbooksDownloader():
 
         print "Beam ID: '%s', '%s'" % (self.beamid, self.successful_login)
 
-    def recursive_descent(self, page = None):
-        if page is None:
+    def recursive_descent(self, absolute_url = None):
+        if absolute_url is None:
             url  = self.urlbase
         else:
-            url  = self.urlbase + page
+            url  = absolute_url
 
         print "  URL: '%s'" % (url)
 
         self.browser.visit(url)
         soup = BeautifulSoup(self.browser.html)
         print "Soup: '%s'" % (soup)
-        
+
+        links_to_visit = []
+
+        entrylist = soup.findAll('entry')
+        for entry in entrylist:
+            # print "  Entry: '%s'" % (entry)
+            # print "\n"
+            linklist = entry.findAll('link', href = True)
+            for link in linklist:
+                print "\n"
+                print "    Link: '%s'" % (link)
+                href = link['href']
+                print "      HRef: '%s'" % (href)
+
+                match = re.search('\.png$', href)
+                if match: 
+                    continue
+
+                match = re.search('\/about\.php$', href)
+                if match: 
+                    continue
+
+                match = re.search('\/kategorien\.xml$', href)
+                if match: 
+                    continue
+
+                match = re.search('\/xmlcatalog\.php5\?.*$', href)
+                if match: 
+                    continue
+
+                print "        Seems to be a followable link ('%s')" % (href)
+                links_to_visit.append(href)
+
+        # Finally, visit all pages that we encountered
+        # TODO Maybe keep a list of already-visited pages in case of cyclical references?
+        for link in links_to_visit:
+            print "Would have to visit '%s'" % (link)
+            # self.recursive_descent(link)
