@@ -34,14 +34,23 @@ class BeamEbooksDownloader():
         print "Browser: '%s'" % (self.browser)
         print "    UA : '%s'" % (self.browser.user_agent)
 
-        print "  Auth: '%s', '%s'" % (self.username, self.password)
         self.browser.visit(url)
 
-        # print "Page:    '%s'" % (self.browser.page)
-        print "Content: '%s'" % (self.browser.html)
+        # print "Content: '%s'" % (self.browser.html)
 
         soup = BeautifulSoup(self.browser.html)
-        print "Soup: '%s'" % (soup)
+        # print "Soup: '%s'" % (soup)
+
+        form = self.browser.select_form(nr = 0)
+        print "Form: '%s'" % (form)
+        print "  Auth: '%s', '%s'" % (self.username, self.password)
+        form['user'] = self.username
+        form['pass'] = self.password
+        self.browser.submit()
+
+        print "New Content: '%s'" % (self.browser.html)
+
+        soup = BeautifulSoup(self.browser.html)
+        print "New Soup: '%s'" % (soup)
 
         print "Cookies: '%s'" % (self.browser.cookies)
-
