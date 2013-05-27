@@ -28,11 +28,15 @@ class BeamEbooksDownloader():
         self.beamid = None
         self.successful_login = False
 
+        self.already_visited_links = []
+
         self.browser = Browser(enable_developer_tools=True)
 
     def login(self):
         self.beamid = None
         self.successful_login = False
+
+        self.already_visited_links = []
 
         url  = self.urlbase + "/aldiko/cookisetzen.php"
         print "  URL: '%s'" % (url)
@@ -70,12 +74,19 @@ class BeamEbooksDownloader():
 
         print "Beam ID: '%s', '%s'" % (self.beamid, self.successful_login)
 
-    def recursive_descent(self, absolute_url = None):
+    def recursive_descent(self, absolute_url = None, further_descend = True):
         if absolute_url is None:
             url  = self.urlbase
         else:
             url  = absolute_url
 
+        if url in self.already_visited_links:
+            print "Already have been here ('%s')..." % (url)
+        else:
+            print "Visiting ('%s')..." % (url)
+            self.visit_url(absolute_url, further_descend)
+
+    def visit_url(self, url = None, further_descend = True):
         print "  URL: '%s'" % (url)
 
         self.browser.visit(url)
@@ -112,6 +123,10 @@ class BeamEbooksDownloader():
                     continue
 
                 match = re.search('\/xmlcatalog\.php5\?.*$', href)
+                if match:
+                    continue
+
+                match = re.search('\/download\.php5\?.*$', href)
                 if match: 
                     continue
 
@@ -119,7 +134,6 @@ class BeamEbooksDownloader():
                 links_to_visit.append(href)
 
         # Finally, visit all pages that we encountered
-        # TODO Maybe keep a list of already-visited pages in case of cyclical references?
-        for link in links_to_visit:
-            print "Would have to visit '%s'" % (link)
-            # self.recursive_descent(link)
+        if further_descend:
+            for link in links_to_visit:
+                self.recursive_descent(link)
