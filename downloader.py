@@ -38,7 +38,7 @@ class BeamEbooksDownloader():
 
         # print "Content: '%s'" % (self.browser.html)
 
-        soup = BeautifulSoup(self.browser.html)
+        # soup = BeautifulSoup(self.browser.html)
         # print "Soup: '%s'" % (soup)
 
         form = self.browser.select_form(nr = 0)
@@ -48,9 +48,21 @@ class BeamEbooksDownloader():
         form['pass'] = self.password
         self.browser.submit()
 
-        print "New Content: '%s'" % (self.browser.html)
-
+        # print "New Content: '%s'" % (self.browser.html)
         soup = BeautifulSoup(self.browser.html)
-        print "New Soup: '%s'" % (soup)
+        # print "New Soup: '%s'" % (soup)
 
         print "Cookies: '%s'" % (self.browser.cookies)
+
+    def recursive_descent(self, page = None):
+        if page is None:
+            url  = self.urlbase
+        else:
+            url  = self.urlbase + page
+
+        print "  URL: '%s'" % (url)
+
+        self.browser.visit(url)
+        soup = BeautifulSoup(self.browser.html)
+        print "Soup: '%s'" % (soup)
+        

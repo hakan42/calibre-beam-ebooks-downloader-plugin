@@ -83,4 +83,7 @@ class Downloader(InterfaceActionBase):
         downloader = BeamEbooksDownloader()
         downloader.login()
 
+        # downloader.recursive_descent('/aldiko/bibuebersicht.php5?user=4711')
+        # downloader.recursive_descent('/aldiko/pakete.php5?user=4711')
+
         pass
