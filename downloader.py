@@ -201,9 +201,14 @@ class BeamEbooksDownloader():
             print "      Link: '%s'" % (link)
             print "        HRef: '%s'" % (href)
 
+            match = re.search('^http\:\/\/', href)
+            if match is None:
+                href = self.urlbase + href
+                print "        Extentended HRef: '%s'" % (href)
+
             match = re.search('\/bibliothek\.php\?.*$', href)
             if match:
-                return self.urlbase + href
+                return href
 
             match = re.search('\/bibuebersicht\.php5\?.*$', href)
             if match:
@@ -220,7 +225,7 @@ class BeamEbooksDownloader():
             # Just relative links for packages 
             match = re.search('^paket\.php5\?paketnr=.*$', href)
             if match:
-                return self.urlbase + '/aldiko/' + href
+                return '/aldiko/' + href
 
         return None
 
