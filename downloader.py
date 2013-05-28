@@ -15,7 +15,7 @@ from calibre import browser
 #
 class BeamEbooksDownloader():
 
-    def __init__(self):
+    def __init__(self, version):
         print "Initializing BeamEbooksDownloader()"
         print "  myself: '%s'" % (self)
 
@@ -32,7 +32,11 @@ class BeamEbooksDownloader():
 
         self.downloadable_ebooks = []
 
-        self.browser = browser()
+        # TODO How do I access this string from the calibre core?
+        USER_AGENT = 'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101210 Gentoo Firefox/3.6.13'
+        user_agent =  'calibre-beam-ebooks-downloader-plugin/%d.%d.%d' % (version)
+        user_agent = USER_AGENT + ' ' + user_agent 
+        self.browser = browser(user_agent=user_agent)
         # self.browser.set_debug_http(True)
         # self.browser.set_debug_responses(True)
 
@@ -54,7 +58,7 @@ class BeamEbooksDownloader():
         print "Response Code: '%s'" % (response.code)
         print "Cookies: '%s'" % (self.browser.cookiejar)
 
-        content = response.get_data()
+        # content = response.get_data()
         # print "Content: '%s'" % (content)
 
         # soup = BeautifulSoup(self.browser.html)
@@ -68,9 +72,13 @@ class BeamEbooksDownloader():
             self.browser.form['pass'] = self.password
             self.browser.submit()
 
-        # print "New Content: '%s'" % (self.browser.html)
+        # content = response.get_data()
+        # print "Content: '%s'" % (content)
         # soup = BeautifulSoup(self.browser.html)
         # print "New Soup: '%s'" % (soup)
+
+        print "Response Code: '%s'" % (response.code)
+        # print "Cookies: '%s'" % (self.browser.cookiejar)
 
         # print "Cookies: '%s'" % (self.browser.cookies)
         for cookie in self.browser.cookiejar:
