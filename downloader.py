@@ -8,6 +8,9 @@ __docformat__ = 'restructuredtext en'
 
 
 #
+import os
+import sys
+import tempfile
 import re
 from calibre.ebooks.BeautifulSoup import BeautifulSoup
 from calibre import browser
@@ -40,6 +43,37 @@ class BeamEbooksDownloader():
         # self.browser.set_debug_http(True)
         # self.browser.set_debug_responses(True)
 
+        # self.tempdirpath = tempfile.mkdtemp(prefix = 'calibre-beam-ebooks-downloader-plugin-')
+        self.tempdirpath = tempfile.gettempdir() + '/' + 'calibre-beam-ebooks-downloader-plugin'
+        print "Saving stuff into '%s'" % (self.tempdirpath)
+
+        self.filenumber = 1000
+
+    def save_response(self, response):
+        if not os.path.exists(self.tempdirpath):
+            os.makedirs(self.tempdirpath)
+
+        try:
+            filename = '%s/response-%d.txt' % (self.tempdirpath, self.filenumber)
+            self.filenumber = self.filenumber + 1
+
+            f = open(filename, 'w')
+            f.write("Response Code: '%s'" % (response.code))
+            f.write("\n\n")
+
+            content = response.get_data()
+            f.write("Content: '%s'" % (content))
+            f.write("\n\n")
+
+            # soup = BeautifulSoup(self.browser.html)
+            # print "New Soup: '%s'" % (soup)
+            # f.write("\n\n")
+
+            f.close()
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            pass
+
     def login(self):
         self.beamid = None
         self.successful_login = False
@@ -49,20 +83,14 @@ class BeamEbooksDownloader():
 
         url  = self.urlbase + "/aldiko/cookisetzen.php"
         print "  URL: '%s'" % (url)
-        
+
         print "Browser: '%s'" % (self.browser)
         # print "    UA : '%s'" % (self.browser.user_agent)
 
         response = self.browser.open(url)
+        self.save_response(response)
 
-        print "Response Code: '%s'" % (response.code)
         print "Cookies: '%s'" % (self.browser.cookiejar)
-
-        # content = response.get_data()
-        # print "Content: '%s'" % (content)
-
-        # soup = BeautifulSoup(self.browser.html)
-        # print "Soup: '%s'" % (soup)
 
         if response.code == 200:
             form = self.browser.select_form(nr = 0)
@@ -72,15 +100,11 @@ class BeamEbooksDownloader():
             self.browser.form['pass'] = self.password
             self.browser.submit()
 
-        # content = response.get_data()
-        # print "Content: '%s'" % (content)
-        # soup = BeautifulSoup(self.browser.html)
-        # print "New Soup: '%s'" % (soup)
-
-        print "Response Code: '%s'" % (response.code)
+        # After from submission
+        self.save_response(response)
+        # print "Response Code: '%s'" % (response.code)
         # print "Cookies: '%s'" % (self.browser.cookiejar)
 
-        # print "Cookies: '%s'" % (self.browser.cookies)
         for cookie in self.browser.cookiejar:
             # print "  C: '%s'" % (cookie)
             if hasattr(cookie, 'name'):
@@ -109,9 +133,11 @@ class BeamEbooksDownloader():
 
         self.browser.open(url)
         response = self.browser.open(url)
+        self.save_response(response)
+        
         content = response.get_data()
         soup = BeautifulSoup(content)
-        print "Soup: '%s'" % (soup)
+        # print "Soup: '%s'" % (soup)
 
         links_to_visit = []
 
@@ -125,10 +151,10 @@ class BeamEbooksDownloader():
             # print "\n"
             linklist = entry.findAll('link', href = True)
             for link in linklist:
-                print "\n"
-                print "    Link: '%s'" % (link)
+                # print "\n"
+                # print "    Link: '%s'" % (link)
                 href = link['href']
-                print "      HRef: '%s'" % (href)
+                # print "      HRef: '%s'" % (href)
 
                 match = re.search('\.png$', href)
                 if match: 
