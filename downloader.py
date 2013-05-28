@@ -149,45 +149,66 @@ class BeamEbooksDownloader():
         for entry in entrylist:
             # print "  Entry: '%s'" % (entry)
             # print "\n"
-            linklist = entry.findAll('link', href = True)
-            for link in linklist:
-                # print "\n"
-                # print "    Link: '%s'" % (link)
-                href = link['href']
-                # print "      HRef: '%s'" % (href)
+            idtag = entry.find('id')
+            if idtag is not None:
+                # First element of list...
+                contents = idtag.contents[0]
+                print "    Id: '%s' / '%s'" % (idtag, contents)
 
-                match = re.search('\.png$', href)
-                if match: 
-                    continue
-
-                match = re.search('\.jpg$', href)
+                match = re.match('urn:beam-ebooks:private', contents)
                 if match:
-                    continue
+                    href = self.extract_link(entry)
+                    if href:
+                        print "          Seems to be a followable link ('%s')" % (href)
+                        links_to_visit.append(href)
 
-                match = re.search('\/about\.php$', href)
-                if match: 
-                    continue
-
-                match = re.search('\/kategorien\.xml$', href)
-                if match: 
-                    continue
-
-                match = re.search('\/xmlcatalog\.php5\?.*$', href)
+                match = re.match('urn:beam-ebooks:alle', contents)
                 if match:
-                    continue
+                    href = self.extract_link(entry)
+                    if href:
+                        print "          Seems to be a followable link ('%s')" % (href)
+                        links_to_visit.append(href)
 
-                match = re.search('\/download\.php5\?.*$', href)
-                if match:
-                    self.downloadable_ebooks.append(href)
-                    continue
-
-                print "        Seems to be a followable link ('%s')" % (href)
-                links_to_visit.append(href)
+                # self.downloadable_ebooks.append(href)
 
         # Finally, visit all pages that we encountered
         if further_descend:
             for link in links_to_visit:
                 self.recursive_descent(link)
+
+    def extract_link(self, entry):
+        linklist = entry.findAll('link', href = True)
+        for link in linklist:
+            href = link['href']
+
+            match = re.search('\.png$', href)
+            if match:
+                continue
+
+            match = re.search('\.jpg$', href)
+            if match:
+                continue
+
+            print "      Link: '%s'" % (link)
+            print "        HRef: '%s'" % (href)
+
+            match = re.search('\/bibliothek\.php\?.*$', href)
+            if match:
+                return href
+
+            match = re.search('\/bibuebersicht\.php5\?.*$', href)
+            if match:
+                return href
+
+            match = re.search('\/pakete\.php5\?.*$', href)
+            if match:
+                return href
+
+            match = re.search('\/download\.php5\?.*$', href)
+            if match:
+                return href
+
+        return None
 
     # Now, mirror all ebooks encountered in the loop above
     def download_ebooks(self):
