@@ -10,7 +10,7 @@ __docformat__ = 'restructuredtext en'
 #
 import re
 from calibre.ebooks.BeautifulSoup import BeautifulSoup
-from calibre.web.jsbrowser.browser import Browser
+from calibre import browser
 
 #
 class BeamEbooksDownloader():
@@ -32,7 +32,9 @@ class BeamEbooksDownloader():
 
         self.downloadable_ebooks = []
 
-        self.browser = Browser(enable_developer_tools=True)
+        self.browser = browser()
+        # self.browser.set_debug_http(True)
+        # self.browser.set_debug_responses(True)
 
     def login(self):
         self.beamid = None
@@ -45,28 +47,33 @@ class BeamEbooksDownloader():
         print "  URL: '%s'" % (url)
         
         print "Browser: '%s'" % (self.browser)
-        print "    UA : '%s'" % (self.browser.user_agent)
+        # print "    UA : '%s'" % (self.browser.user_agent)
 
-        self.browser.visit(url)
+        response = self.browser.open(url)
 
-        # print "Content: '%s'" % (self.browser.html)
+        print "Response Code: '%s'" % (response.code)
+        print "Cookies: '%s'" % (self.browser.cookiejar)
+
+        content = response.get_data()
+        # print "Content: '%s'" % (content)
 
         # soup = BeautifulSoup(self.browser.html)
         # print "Soup: '%s'" % (soup)
 
-        form = self.browser.select_form(nr = 0)
-        print "Form: '%s'" % (form)
-        print "  Auth: '%s', '%s'" % (self.username, self.password)
-        form['user'] = self.username
-        form['pass'] = self.password
-        self.browser.submit()
+        if response.code == 200:
+            form = self.browser.select_form(nr = 0)
+            print "Form: '%s'" % (form)
+            print "  Auth: '%s', '%s'" % (self.username, self.password)
+            self.browser.form['user'] = self.username
+            self.browser.form['pass'] = self.password
+            self.browser.submit()
 
         # print "New Content: '%s'" % (self.browser.html)
         # soup = BeautifulSoup(self.browser.html)
         # print "New Soup: '%s'" % (soup)
 
         # print "Cookies: '%s'" % (self.browser.cookies)
-        for cookie in self.browser.cookies:
+        for cookie in self.browser.cookiejar:
             # print "  C: '%s'" % (cookie)
             if hasattr(cookie, 'name'):
                 if hasattr(cookie, 'value'):
@@ -92,11 +99,17 @@ class BeamEbooksDownloader():
     def visit_url(self, url = None, further_descend = True):
         print "  URL: '%s'" % (url)
 
-        self.browser.visit(url)
-        soup = BeautifulSoup(self.browser.html)
+        self.browser.open(url)
+        response = self.browser.open(url)
+        content = response.get_data()
+        soup = BeautifulSoup(content)
         print "Soup: '%s'" % (soup)
 
         links_to_visit = []
+
+        if response.code != 200:
+            print "Something horrible happened (RC %s)" % (response.code)
+            pass
 
         entrylist = soup.findAll('entry')
         for entry in entrylist:
