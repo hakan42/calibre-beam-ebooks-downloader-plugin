@@ -169,7 +169,16 @@ class BeamEbooksDownloader():
                         print "          Seems to be a followable link ('%s')" % (href)
                         links_to_visit.append(href)
 
-                # self.downloadable_ebooks.append(href)
+                match = re.match('urn:beam-ebooks:titelnr:', contents)
+                if match:
+                    href = self.extract_link(entry)
+                    if href:
+                        match = re.search('\/download\.php5\?.*$', href)
+                        if match:
+                            self.downloadable_ebooks.append(href)
+                        else:
+                            print "          Seems to be a followable link ('%s')" % (href)
+                            links_to_visit.append(href)
 
         # Finally, visit all pages that we encountered
         if further_descend:
@@ -194,7 +203,7 @@ class BeamEbooksDownloader():
 
             match = re.search('\/bibliothek\.php\?.*$', href)
             if match:
-                return href
+                return self.urlbase + href
 
             match = re.search('\/bibuebersicht\.php5\?.*$', href)
             if match:
@@ -207,6 +216,11 @@ class BeamEbooksDownloader():
             match = re.search('\/download\.php5\?.*$', href)
             if match:
                 return href
+
+            # Just relative links for packages 
+            match = re.search('^paket\.php5\?paketnr=.*$', href)
+            if match:
+                return self.urlbase + '/aldiko/' + href
 
         return None
 
