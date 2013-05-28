@@ -91,6 +91,7 @@ class Downloader(InterfaceActionBase):
             # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/aldiko/bibuebersicht.php5?user=" + downloader.beamid)
             # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/aldiko/pakete.php5?user=" + downloader.beamid)
             downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE))
+            # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/kunden/abos.php5")
             downloader.download_ebooks()
 
         pass
