@@ -43,6 +43,8 @@ class PrefsFacade():
 
     HASHED_PASSWORD = 'HashedPassword'
 
+    DOWNLOADS_PER_SESSION = 'DownloadsPerSession'
+
     def __init__(self, passed_db=None):
         self.libraryid = None
         self.plugin_prefs = plugin_prefs
@@ -58,10 +60,16 @@ class PrefsFacade():
             self[self.URLBASE] = self.default_prefs[self.URLBASE]
             self.save()
 
+        url_base = self[self.DOWNLOADS_PER_SESSION]
+        if url_base is None:
+            self[self.DOWNLOADS_PER_SESSION] = self.default_prefs[self.DOWNLOADS_PER_SESSION]
+            self.save()
+
 
     def _init_defaults(self):
         self.default_prefs = {}
         self.default_prefs[self.URLBASE] = 'http://aldiko.beam-ebooks.de/'
+        self.default_prefs[self.DOWNLOADS_PER_SESSION] = 10
 
 
     def _migrate_config_if_required(self):
