@@ -255,7 +255,43 @@ class BeamEbooksDownloader():
     # Now, mirror all ebooks encountered in the loop above
     def download_ebooks(self):
 
+        print "Library id is (%s)" % (self.prefs.get_library_uuid())
+
+        db = self.prefs._get_db()
+        print "Library database object is (%s)" % (db)
+
+        # Not sure if this is the most efficient way of finding books in the database...
+        beam_books = {}
+        data = db.get_data_as_dict()
+        print "Library data is (%s)" % (db)
+        for book in data:
+            try:
+                # print "\n"
+                # print "  Data Item (%s)" % (book)
+                # amazon:B0056ADMZE, beam-ebooks:19789, goodreads:11791889
+                if book['identifiers'] is not None:
+                    identifiers = re.split(',', book['identifiers'])
+                    # print "    Identifiers: '%s'" % (identifiers)
+                    for identifier in identifiers:
+                        if re.match('^beam-ebooks\:', identifier):
+                            beamebooks_id = re.split(':', identifier)[1]
+                            # print "      Beam Ebooks ID: '%s'" % (beamebooks_id)
+                            beam_books[beamebooks_id] = book
+            except:
+                pass
+
+        print "\n"
+
+        for book_id in beam_books:
+            try:
+                print "\n"
+                print "  Beam EBook (%s, %s)" % (book_id, beam_books[book_id])
+            except:
+                pass
+
+        handled_ebooks = 0
         for entry in self.downloadable_ebooks:
+
             urn = entry['urn']
             href = entry['href']
             mimetype = entry['mimetype']
