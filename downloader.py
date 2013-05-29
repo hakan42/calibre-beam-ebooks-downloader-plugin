@@ -28,6 +28,7 @@ import os
 import sys
 import tempfile
 import re
+import zipfile
 from calibre.ebooks.BeautifulSoup import BeautifulSoup
 from calibre import browser
 
@@ -253,4 +254,28 @@ class BeamEbooksDownloader():
 
     # Now, mirror all ebooks encountered in the loop above
     def download_ebooks(self):
-        pass
+
+        for entry in self.downloadable_ebooks:
+            urn = entry['urn']
+            href = entry['href']
+            mimetype = entry['mimetype']
+
+            foo = re.split(':', urn)
+            beamebooks_id = foo[3]
+            # print "  x: (%s), id: %s" % (foo, beamebooks_id)
+
+            if mimetype == 'application/epub+zip':
+                ext = 'zip'
+            else:
+                ext = 'bin'
+
+            path = self.tempdirpath + "/" + beamebooks_id + "." + ext
+            if os.path.exists(path) == False:
+                print "Have to download %s, %s, %s" % (beamebooks_id, mimetype, href)
+                self.browser.retrieve(href, path)
+
+            # If file is not a correct zip, something went wrong, so continue with next file
+            with zipfile.ZipFile(path, 'r') as zipf:
+                if zipf.testzip() is not None:
+                    os.remove(path)
+                    continue
