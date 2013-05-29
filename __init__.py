@@ -68,13 +68,20 @@ class Downloader(InterfaceActionBase):
         from calibre.library import db
         from optparse import OptionParser      
 
-        from calibre_plugins.beam_ebooks_downloader.prefs import prefs
+        from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
 
         print 'Here I Am'
 
+        my_db = db(path=None, read_only=True)
+
+        # print 'Database is (%s)' % (prefs._get_db())
+        print 'Database is (%s)' % (my_db)
+
+        prefs = PrefsFacade(my_db)
+
         print 'My Prefs are (%s)' % (prefs)
         print '    methods are (%s)' % (dir(prefs))
-        print '    library id is (%s)' % (prefs.libraryid)
+        print '    library id is (%s)' % (prefs.get_library_uuid())
 
         print 'Calibre Prefs are (%s)' % (calibre_prefs)
         print '    methods are (%s)' % (dir(calibre_prefs))

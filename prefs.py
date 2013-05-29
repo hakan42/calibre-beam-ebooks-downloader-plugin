@@ -8,6 +8,7 @@ __docformat__ = 'restructuredtext en'
 
 
 from calibre.utils.config import JSONConfig
+from calibre.gui2.ui import get_gui
 
 SCHEMA_VERSION = 'SchemaVersion'
 DEFAULT_SCHEMA_VERSION = 1.0
@@ -48,6 +49,15 @@ class PrefsFacade():
             self.save()
 
 
+    def _get_db(self):
+        if self.passed_db:
+            return self.passed_db
+        else:
+            # In the GUI plugin we want current db so we detect when
+            # it's changed.  CLI plugin calls need to pass db in.
+            return get_gui().current_db
+
+
     def _get_prefs(self):
         return self.plugin_prefs
 
@@ -63,6 +73,14 @@ class PrefsFacade():
     def __setitem__(self, k, v):
         prefs = self._get_prefs()
         prefs[k]=v
+
+
+    def get_library_uuid(self):
+        try:
+            library_uuid = self._get_db().library_id
+        except:
+            library_uuid = ''
+        return library_uuid
 
 
     def save(self):
