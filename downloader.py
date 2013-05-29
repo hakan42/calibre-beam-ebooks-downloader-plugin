@@ -18,11 +18,11 @@ from calibre import browser
 #
 class BeamEbooksDownloader():
 
-    def __init__(self, version):
+    def __init__(self, prefs, version):
         print "Initializing BeamEbooksDownloader()"
         print "  myself: '%s'" % (self)
 
-        from calibre_plugins.beam_ebooks_downloader.prefs import prefs
+        self.prefs = prefs
 
         self.urlbase  = prefs.__getitem__(prefs.URLBASE)
         self.username = prefs.__getitem__(prefs.USERNAME)
@@ -231,6 +231,8 @@ class BeamEbooksDownloader():
 
     # Now, mirror all ebooks encountered in the loop above
     def download_ebooks(self):
+
+        print '    library id is (%s)' % (self.prefs.get_library_uuid())
 
         for url in self.downloadable_ebooks:
             print "Would have to download: '%s'" % (url)

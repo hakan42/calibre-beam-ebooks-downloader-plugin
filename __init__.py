@@ -87,7 +87,7 @@ class Downloader(InterfaceActionBase):
         print '    methods are (%s)' % (dir(calibre_prefs))
 
         from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
-        downloader = BeamEbooksDownloader(self.version)
+        downloader = BeamEbooksDownloader(prefs, self.version)
         downloader.login()
 
         if downloader.successful_login == False:
