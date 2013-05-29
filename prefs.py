@@ -16,16 +16,6 @@ DEFAULT_SCHEMA_VERSION = 1.0
 # This is where all preferences for this plugin will be stored
 plugin_prefs = JSONConfig('plugins/Beam EBooks Downloader')
 
-# Set defaults
-plugin_prefs.defaults['hello_world_msg'] = 'Hello, World!'
-
-
-def migrate_config_if_required():
-    # Contains code for migrating versions of json schema
-    # Make sure we store our schema version in the file
-    schema_version = plugin_prefs.get(SCHEMA_VERSION, 0)
-    if schema_version != DEFAULT_SCHEMA_VERSION:
-        plugin_prefs[SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
 
 class PrefsFacade():
 
@@ -38,16 +28,33 @@ class PrefsFacade():
     HASHED_PASSWORD = 'HashedPassword'
 
     def __init__(self, passed_db=None):
-        self.default_prefs = plugin_prefs.defaults
         self.libraryid = None
         self.plugin_prefs = plugin_prefs
         self.passed_db = passed_db
-        
-        url_base = self.__getitem__(self.URLBASE)
+
+        # Set defaults
+        self._init_defaults()
+        # Ensure our config gets migrated
+        self._migrate_config_if_required()
+
+        url_base = self[self.URLBASE]
         if url_base is None:
-            self.__setitem__(self.URLBASE, 'http://aldiko.beam-ebooks.de/')
+            self[self.URLBASE] = self.default_prefs[self.URLBASE]
             self.save()
 
+
+    def _init_defaults(self):
+        self.default_prefs = {}
+        self.default_prefs[self.URLBASE] = 'http://aldiko.beam-ebooks.de/'
+
+
+    def _migrate_config_if_required(self):
+        # Contains code for migrating versions of json schema
+        # Make sure we store our schema version in the file
+        schema_version = plugin_prefs.get(SCHEMA_VERSION, 0)
+        if schema_version != DEFAULT_SCHEMA_VERSION:
+            plugin_prefs[SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
+            # And now, do some migration stuff...
 
     def _get_db(self):
         if self.passed_db:
@@ -86,10 +93,3 @@ class PrefsFacade():
     def save(self):
         print "Saving myself"
         plugin_prefs.commit()
-
-
-# Ensure our config gets migrated
-migrate_config_if_required()
-
-# Return myself
-prefs = PrefsFacade()

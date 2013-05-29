@@ -12,7 +12,7 @@ from calibre.gui2.actions import InterfaceAction
 class BeamEbooksDownloaderAction(InterfaceAction):
 
     def apply_settings(self):
-        from calibre_plugins.beam_ebooks_downloader.prefs import prefs
 
         # No need to do anything with prefs here, but we could.
-        prefs
+        # prefs
+        pass

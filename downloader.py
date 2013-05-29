@@ -24,9 +24,9 @@ class BeamEbooksDownloader():
 
         self.prefs = prefs
 
-        self.urlbase  = prefs.__getitem__(prefs.URLBASE)
-        self.username = prefs.__getitem__(prefs.USERNAME)
-        self.password = prefs.__getitem__(prefs.PASSWORD)
+        self.urlbase  = prefs[prefs.URLBASE]
+        self.username = prefs[prefs.USERNAME]
+        self.password = prefs[prefs.PASSWORD]
 
         self.beamid = None
         self.successful_login = False

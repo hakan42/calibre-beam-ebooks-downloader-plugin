@@ -8,6 +8,7 @@ __docformat__ = 'restructuredtext en'
 
 # The class that all Interface Action plugin wrappers must inherit from
 from calibre.customize import InterfaceActionBase
+from calibre.library import db
 
 # Apparently the name for this class doesn't matter
 class Downloader(InterfaceActionBase):
@@ -45,7 +46,11 @@ class Downloader(InterfaceActionBase):
         '''
         if self.actual_plugin_:
             from calibre_plugins.beam_ebooks_downloader.config import ConfigWidget
-            return ConfigWidget(self.actual_plugin_)
+            from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
+
+            my_db = db(path=None, read_only=True)
+            prefs = PrefsFacade(my_db)
+            return ConfigWidget(self.actual_plugin_, prefs)
 
 
     def save_settings(self, config_widget):
@@ -65,7 +70,6 @@ class Downloader(InterfaceActionBase):
 
     def cli_main(self, argv):
         from calibre.utils.config import prefs as calibre_prefs
-        from calibre.library import db
         from optparse import OptionParser      
 
         from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
@@ -94,11 +98,11 @@ class Downloader(InterfaceActionBase):
             print "Failed to log in..."
         else:
             print "Parsing document tree now..."
-            # Tempoarily...
-            # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/aldiko/bibuebersicht.php5?user=" + downloader.beamid)
-            # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/aldiko/pakete.php5?user=" + downloader.beamid)
-            downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE))
-            # downloader.recursive_descent(prefs.__getitem__(prefs.URLBASE) + "/kunden/abos.php5")
+            # Temporarily...
+            # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/bibuebersicht.php5?user=" + downloader.beamid)
+            # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/pakete.php5?user=" + downloader.beamid)
+            downloader.recursive_descent(prefs[prefs.URLBASE])
+            # downloader.recursive_descent(prefs[prefs.URLBASE] + "/kunden/abos.php5")
             downloader.download_ebooks()
 
         pass
