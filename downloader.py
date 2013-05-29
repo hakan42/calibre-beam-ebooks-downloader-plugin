@@ -187,11 +187,16 @@ class BeamEbooksDownloader():
 
                 match = re.match('urn:beam-ebooks:titelnr:', contents)
                 if match:
-                    href = self.extract_link(entry)
+                    (href, mimetype) = self.extract_link(entry)
                     if href:
                         match = re.search('\/download\.php5\?.*$', href)
                         if match:
-                            self.downloadable_ebooks.append(href)
+                            print "          Seems to be an ebook ('%s', '%s')" % (mimetype, href)
+                            data = {}
+                            data['urn']      = contents
+                            data['href']     = href
+                            data['mimetype'] = mimetype
+                            self.downloadable_ebooks.append(data)
                         else:
                             print "          Seems to be a followable link ('%s')" % (href)
                             links_to_visit.append(href)
@@ -202,20 +207,18 @@ class BeamEbooksDownloader():
                 self.recursive_descent(link)
 
     def extract_link(self, entry):
-        linklist = entry.findAll('link', href = True)
+        linklist = entry.findAll('link', href = True, type = True)
         for link in linklist:
             href = link['href']
+            mimetype = link['type']
 
-            match = re.search('\.png$', href)
-            if match:
-                continue
-
-            match = re.search('\.jpg$', href)
+            match = re.search('^image\/.*', mimetype)
             if match:
                 continue
 
             print "      Link: '%s'" % (link)
             print "        HRef: '%s'" % (href)
+            print "        Type: '%s'" % (mimetype)
 
             match = re.search('^http\:\/\/', href)
             if match is None:
@@ -236,7 +239,7 @@ class BeamEbooksDownloader():
 
             match = re.search('\/download\.php5\?.*$', href)
             if match:
-                return href
+                return (href, mimetype)
 
             # Just relative links for packages 
             match = re.search('^paket\.php5\?paketnr=.*$', href)
@@ -247,8 +250,4 @@ class BeamEbooksDownloader():
 
     # Now, mirror all ebooks encountered in the loop above
     def download_ebooks(self):
-
-        print '    library id is (%s)' % (self.prefs.get_library_uuid())
-
-        for url in self.downloadable_ebooks:
-            print "Would have to download: '%s'" % (url)
+        pass
