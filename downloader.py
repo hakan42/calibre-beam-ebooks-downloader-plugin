@@ -301,7 +301,7 @@ class BeamEbooksDownloader():
             # print "  x: (%s), id: %s" % (foo, beamebooks_id)
 
             if mimetype == 'application/epub+zip':
-                ext = 'zip'
+                ext = 'epub'
             else:
                 ext = 'bin'
 
