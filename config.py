@@ -55,7 +55,7 @@ class ConfigWidget(QWidget):
         self.layout.addWidget(self.labelUserName, 1, 0)
 
         self.username = QLineEdit(self)
-        if account[prefs.USERNAME] is not None:
+        if account.get(prefs.USERNAME) is not None:
             self.username.setText(account[prefs.USERNAME])
         self.layout.addWidget(self.username, 1, 1)
         self.labelUserName.setBuddy(self.username)
@@ -64,7 +64,7 @@ class ConfigWidget(QWidget):
         self.layout.addWidget(self.labelPassword, 2, 0)
 
         self.password = QLineEdit(self)
-        if account[prefs.PASSWORD] is not None:
+        if account.get(prefs.PASSWORD) is not None:
             self.password.setText(account[prefs.PASSWORD])
         self.layout.addWidget(self.password, 2, 1)
         self.labelPassword.setBuddy(self.password)
