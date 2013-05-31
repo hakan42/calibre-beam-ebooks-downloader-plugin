@@ -90,9 +90,7 @@ class Downloader(InterfaceActionBase):
 
         from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
 
-        print 'Here I Am'
-
-        my_db = db(path=None, read_only=True)
+        my_db = db(path=None, read_only=False)
 
         # print 'Database is (%s)' % (prefs._get_db())
         print 'Database is (%s)' % (my_db)
