@@ -42,6 +42,44 @@ class EBookAdder():
         self.db = self.prefs._get_db()
         self.indentifier_name = indentifier_name
 
+        self.books_of_this_shop = ()
+
+    def load_books(self):
+
+        db = self.db
+        print "Library database object is (%s)" % (db)
+
+        # Not sure if this is the most efficient way of finding books in the database...
+        self.books_of_this_shop = {}
+        data = db.get_data_as_dict()
+
+        regexp = '^' + self.indentifier_name + '\:'
+
+        for book in data:
+            try:
+                # print "\n"
+                # print "  Data Item (%s)" % (book)
+                # amazon:B0056ADMZE, beam-ebooks:19789, goodreads:11791889
+                if book['identifiers'] is not None:
+                    identifiers = re.split(',', book['identifiers'])
+                    # print "    Identifiers: '%s'" % (identifiers)
+                    for identifier in identifiers:
+                        if re.match(regexp, identifier):
+                            identifier = re.split(':', identifier)[1]
+                            # print "      Beam Ebooks ID: '%s'" % (beamebooks_id)
+                            self.books_of_this_shop[identifier] = book
+            except:
+                pass
+
+        print "\n"
+
+        # for book_id in self.books_of_this_shop:
+        #     try:
+        #         print "\n"
+        #         print "  EBook (%s, %s)" % (book_id, self.books_of_this_shop[book_id])
+        #     except:
+        #         pass
+
     def add(self, path = None, identifier = None):
 
         db = self.db

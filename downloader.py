@@ -267,34 +267,7 @@ class BeamEbooksDownloader():
 
         adder = EBookAdder(self.prefs, "beam-ebooks")
 
-        # Not sure if this is the most efficient way of finding books in the database...
-        beam_books = {}
-        data = db.get_data_as_dict()
-        print "Library data is (%s)" % (db)
-        for book in data:
-            try:
-                # print "\n"
-                # print "  Data Item (%s)" % (book)
-                # amazon:B0056ADMZE, beam-ebooks:19789, goodreads:11791889
-                if book['identifiers'] is not None:
-                    identifiers = re.split(',', book['identifiers'])
-                    # print "    Identifiers: '%s'" % (identifiers)
-                    for identifier in identifiers:
-                        if re.match('^beam-ebooks\:', identifier):
-                            beamebooks_id = re.split(':', identifier)[1]
-                            # print "      Beam Ebooks ID: '%s'" % (beamebooks_id)
-                            beam_books[beamebooks_id] = book
-            except:
-                pass
-
-        print "\n"
-
-        for book_id in beam_books:
-            try:
-                print "\n"
-                print "  Beam EBook (%s, %s)" % (book_id, beam_books[book_id])
-            except:
-                pass
+        adder.load_books()
 
         handled_ebooks = 0
         for entry in self.downloadable_ebooks:
@@ -306,8 +279,7 @@ class BeamEbooksDownloader():
             foo = re.split(':', urn)
             beamebooks_id = foo[3]
 
-            book = beam_books.get(beamebooks_id)
-
+            book = adder.books_of_this_shop.get(beamebooks_id)
             if book is None:
                 # Book not found, fetch and try to store in into the database
                 if handled_ebooks < self.prefs[self.prefs.DOWNLOADS_PER_SESSION]:
@@ -328,5 +300,5 @@ class BeamEbooksDownloader():
                     adder.add(path, beamebooks_id)
 
                 else:
-                    print "Handled too many (%d) books already, waiting for next run" % (handled_ebooks)
+                    print "Handled too many (%d of %d) books already, waiting for next run" % (handled_ebooks, self.prefs[self.prefs.DOWNLOADS_PER_SESSION])
                     continue
