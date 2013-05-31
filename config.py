@@ -36,42 +36,66 @@ class ConfigWidget(QWidget):
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
-        self.labelUrlBase = QLabel('URL:')
+        accounts = self.prefs[self.prefs.ACCOUNTS]
+        # Copy any data necessary into the prefs object
+
+        # The primary account, as configured in the GUI above
+        account = accounts.get('0', {})
+
+        self.labelUrlBase = QLabel(_('URL'))
         self.layout.addWidget(self.labelUrlBase, 0, 0)
 
-        self.urlbase = QLineEdit(self)
+        self.urlbase = QLabel()
         if prefs[prefs.URLBASE] is not None:
             self.urlbase.setText(prefs[prefs.URLBASE])
-        self.urlbase.setReadOnly(True)
         self.layout.addWidget(self.urlbase, 0, 1)
         self.labelUrlBase.setBuddy(self.urlbase)
 
-        self.labelUserName = QLabel('Username:')
+        self.labelUserName = QLabel(_('Username'))
         self.layout.addWidget(self.labelUserName, 1, 0)
 
         self.username = QLineEdit(self)
-        if prefs[prefs.USERNAME] is not None:
-            self.username.setText(prefs[prefs.USERNAME])
+        if account[prefs.USERNAME] is not None:
+            self.username.setText(account[prefs.USERNAME])
         self.layout.addWidget(self.username, 1, 1)
         self.labelUserName.setBuddy(self.username)
 
-        self.labelPassword = QLabel('Password')
+        self.labelPassword = QLabel(_('Password'))
         self.layout.addWidget(self.labelPassword, 2, 0)
 
         self.password = QLineEdit(self)
-        if prefs[prefs.PASSWORD] is not None:
-            self.password.setText(prefs[prefs.PASSWORD])
+        if account[prefs.PASSWORD] is not None:
+            self.password.setText(account[prefs.PASSWORD])
         self.layout.addWidget(self.password, 2, 1)
         self.labelPassword.setBuddy(self.password)
 
 
     def save_settings(self):
 
+        # TODO proper obfuscating somewhere, maybe even in 'migrate'
+
+        accounts = self.prefs[self.prefs.ACCOUNTS]
         # Copy any data necessary into the prefs object
-        self.prefs[self.prefs.USERNAME, '%s' % self.username.text()]
-        self.prefs[self.prefs.PASSWORD, '%s' % self.password.text()]
-        # TODO proper hashing somewhere, maybe even in 'migrate'
-        self.prefs[self.prefs.HASHED_PASSWORD, '%s' % self.password.text()]
+
+        # The primary account, as configured in the GUI above
+        account = accounts.get('0', {})
+        account[self.prefs.USERNAME] = '%s' % self.username.text()
+        account[self.prefs.PASSWORD] = '%s' % self.password.text()
+        account[self.prefs.OBFUSCATED_PASSWORD] = '%s' % self.password.text() 
+        account[self.prefs.ENABLED] = True
+        accounts['0'] = account
+
+        # Now the secondary account :-)
+        account = accounts.get('1', {})
+        if account.get(self.prefs.USERNAME) is None:
+            account[self.prefs.USERNAME] = ''
+            account[self.prefs.PASSWORD] = ''
+            account[self.prefs.OBFUSCATED_PASSWORD] = ''
+            account[self.prefs.ENABLED] = False
+        accounts['1'] = account
+
+        # Now, put the hash back to the main prefs
+        self.prefs[self.prefs.ACCOUNTS] = accounts
 
         # And save it...
         self.prefs.save()
