@@ -27,8 +27,27 @@ from calibre.gui2.actions import InterfaceAction
 
 class BeamEbooksDownloaderAction(InterfaceAction):
 
+    action_spec = ('Beam EBooks Downloader', None, 'Run the Beam Ebooks Downloader', None)
+
+    def genesis(self):
+        # This method is called once per plugin, do initial setup here
+        icon = get_icons('images/icon.png')
+
+        # The qaction is automatically created from the action_spec defined above
+        self.qaction.setIcon(icon)
+        self.qaction.triggered.connect(self.show_dialog)
+
+    def show_dialog(self):
+        # The base plugin object defined in __init__.py
+        base_plugin_object = self.interface_action_base_plugin
+
+        do_user_config = base_plugin_object.do_user_config
+
+        # d = DemoDialog(self.gui, self.qaction.icon(), do_user_config)
+        # d.show()
+
     def apply_settings(self):
 
-        # No need to do anything with prefs here, but we could.
-        # prefs
+        # In an actual non trivial plugin, you would probably need to
+        # do something based on the settings in prefs
         pass

@@ -22,7 +22,7 @@
 		<zip basedir="${basedir}" destfile="build/${ant.project.name}-${version}.zip">
 			<include name="*.txt" />
 			<include name="*.py" />
-			<include name="images" />
+			<include name="images/*.png" />
 		</zip>
 	</target>
 
