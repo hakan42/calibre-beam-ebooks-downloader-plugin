@@ -26,6 +26,7 @@ __docformat__ = 'restructuredtext en'
 #
 import re
 import os
+import sys
 import zipfile
 from calibre.ebooks.metadata.meta import metadata_from_formats
 
@@ -67,14 +68,22 @@ class EBookAdder():
             # Now, we should iterate over all books and try to match author as well....
             # Well, next time :-)
             try:
-                internal_book_id = book_ids[0]
+                internal_book_id = book_ids.pop()
                 print "        ID of pre-existing book: %s" % (internal_book_id)
             except:
+                print "Unexpected error:", sys.exc_info()[0]
                 pass
         else:
             print "      New Book, trying to add it to database"
             internal_book_id = db.import_book(mi, formats)
             print "        ID of new book: %s" % (internal_book_id)
 
-            if internal_book_id is not None:
-                print "      Enhancing book #%s with %s id '%s'" % (internal_book_id, self.indentifier_name, identifier)
+        if internal_book_id is not None:
+            print "      Enhancing book #%s with %s id '%s'" % (internal_book_id, self.indentifier_name, identifier)
+            identifiers = db.get_identifiers(internal_book_id, index_is_id=True)
+            print "        Old Identifiers: %s" % (identifiers)
+            identifiers[self.indentifier_name] = identifier
+            db.set_identifiers(internal_book_id, identifiers, notify=True, commit=True)
+
+            identifiers = db.get_identifiers(internal_book_id, index_is_id=True)
+            print "        New Identifiers: %s" % (identifiers)
