@@ -300,5 +300,6 @@ class BeamEbooksDownloader():
                     adder.add(path, beamebooks_id)
 
                 else:
-                    print "Handled too many (%d of %d) books already, waiting for next run" % (handled_ebooks, self.prefs[self.prefs.DOWNLOADS_PER_SESSION])
                     continue
+
+        print "Handled (%d of %d) books, waiting for next run" % (handled_ebooks, len(self.downloadable_ebooks))
