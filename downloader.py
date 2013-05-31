@@ -28,9 +28,9 @@ import os
 import sys
 import tempfile
 import re
-import zipfile
 from calibre.ebooks.BeautifulSoup import BeautifulSoup
 from calibre import browser
+from calibre_plugins.beam_ebooks_downloader.adder import EBookAdder
 
 #
 class BeamEbooksDownloader():
@@ -265,6 +265,8 @@ class BeamEbooksDownloader():
         db = self.prefs._get_db()
         print "Library database object is (%s)" % (db)
 
+        adder = EBookAdder(self.prefs, "beam-ebooks")
+
         # Not sure if this is the most efficient way of finding books in the database...
         beam_books = {}
         data = db.get_data_as_dict()
@@ -323,11 +325,7 @@ class BeamEbooksDownloader():
                         print "Have to download %s, %s, %s" % (beamebooks_id, mimetype, href)
                         self.browser.retrieve(href, path)
 
-                    # If file is not a correct zip, something went wrong, so continue with next file
-                    with zipfile.ZipFile(path, 'r') as zipf:
-                        if zipf.testzip() is not None:
-                            os.remove(path)
-                            continue
+                    adder.add(path, beamebooks_id)
 
                 else:
                     print "Handled too many (%d) books already, waiting for next run" % (handled_ebooks)
