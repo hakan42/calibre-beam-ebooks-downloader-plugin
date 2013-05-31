@@ -37,11 +37,15 @@ class PrefsFacade():
 
     URLBASE = 'Urlbase'
 
+    ACCOUNTS = 'Accounts'
+
     USERNAME = 'Username'
 
     PASSWORD = 'Password'
 
-    HASHED_PASSWORD = 'HashedPassword'
+    OBFUSCATED_PASSWORD = 'ObfuscatedPassword'
+
+    ENABLED = 'Enabled'
 
     DOWNLOADS_PER_SESSION = 'DownloadsPerSession'
 
@@ -60,6 +64,11 @@ class PrefsFacade():
             self[self.URLBASE] = self.default_prefs[self.URLBASE]
             self.save()
 
+        accounts = self[self.ACCOUNTS]
+        if accounts is None:
+            self[self.ACCOUNTS] = self.default_prefs[self.ACCOUNTS]
+            self.save()
+
         url_base = self[self.DOWNLOADS_PER_SESSION]
         if url_base is None:
             self[self.DOWNLOADS_PER_SESSION] = self.default_prefs[self.DOWNLOADS_PER_SESSION]
@@ -69,6 +78,7 @@ class PrefsFacade():
     def _init_defaults(self):
         self.default_prefs = {}
         self.default_prefs[self.URLBASE] = 'http://aldiko.beam-ebooks.de/'
+        self.default_prefs[self.ACCOUNTS] = {}
         self.default_prefs[self.DOWNLOADS_PER_SESSION] = 10
 
 
