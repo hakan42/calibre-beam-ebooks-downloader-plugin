@@ -39,6 +39,8 @@ class PrefsFacade():
 
     ACCOUNTS = 'Accounts'
 
+    ACCOUNT_ID = 'Id'
+
     USERNAME = 'Username'
 
     PASSWORD = 'Password'

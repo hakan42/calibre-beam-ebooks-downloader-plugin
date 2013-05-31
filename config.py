@@ -78,21 +78,25 @@ class ConfigWidget(QWidget):
         # Copy any data necessary into the prefs object
 
         # The primary account, as configured in the GUI above
-        account = accounts.get('0', {})
+        account_id = '0'
+        account = accounts.get(account_id, {})
+        account[self.prefs.ACCOUNT_ID] = account_id
         account[self.prefs.USERNAME] = '%s' % self.username.text()
         account[self.prefs.PASSWORD] = '%s' % self.password.text()
         account[self.prefs.OBFUSCATED_PASSWORD] = '%s' % self.password.text() 
         account[self.prefs.ENABLED] = True
-        accounts['0'] = account
+        accounts[account_id] = account
 
         # Now the secondary account :-)
-        account = accounts.get('1', {})
+        account_id = '1'
+        account = accounts.get(account_id, {})
+        account[self.prefs.ACCOUNT_ID] = account_id
         if account.get(self.prefs.USERNAME) is None:
             account[self.prefs.USERNAME] = ''
             account[self.prefs.PASSWORD] = ''
             account[self.prefs.OBFUSCATED_PASSWORD] = ''
             account[self.prefs.ENABLED] = False
-        accounts['1'] = account
+        accounts[account_id] = account
 
         # Now, put the hash back to the main prefs
         self.prefs[self.prefs.ACCOUNTS] = accounts
