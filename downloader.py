@@ -303,20 +303,32 @@ class BeamEbooksDownloader():
 
             foo = re.split(':', urn)
             beamebooks_id = foo[3]
-            # print "  x: (%s), id: %s" % (foo, beamebooks_id)
 
-            if mimetype == 'application/epub+zip':
-                ext = 'epub'
-            else:
-                ext = 'bin'
+            book = beam_books.get(beamebooks_id)
 
-            path = self.tempdirpath + "/" + beamebooks_id + "." + ext
-            if os.path.exists(path) == False:
-                print "Have to download %s, %s, %s" % (beamebooks_id, mimetype, href)
-                self.browser.retrieve(href, path)
+            if book is None:
+                # Book not found, fetch and try to store in into the database
+                if handled_ebooks < self.prefs[self.prefs.DOWNLOADS_PER_SESSION]:
+                    handled_ebooks = handled_ebooks + 1
+                    # Still in quota for this run
+                    print "Working on book %d: %s" % (handled_ebooks, beamebooks_id)
 
-            # If file is not a correct zip, something went wrong, so continue with next file
-            with zipfile.ZipFile(path, 'r') as zipf:
-                if zipf.testzip() is not None:
-                    os.remove(path)
+                    if mimetype == 'application/epub+zip':
+                        ext = 'epub'
+                    else:
+                        ext = 'bin'
+
+                    path = self.tempdirpath + "/" + beamebooks_id + "." + ext
+                    if os.path.exists(path) == False:
+                        print "Have to download %s, %s, %s" % (beamebooks_id, mimetype, href)
+                        self.browser.retrieve(href, path)
+
+                    # If file is not a correct zip, something went wrong, so continue with next file
+                    with zipfile.ZipFile(path, 'r') as zipf:
+                        if zipf.testzip() is not None:
+                            os.remove(path)
+                            continue
+
+                else:
+                    print "Handled too many (%d) books already, waiting for next run" % (handled_ebooks)
                     continue
