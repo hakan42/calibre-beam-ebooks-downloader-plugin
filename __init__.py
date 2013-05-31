@@ -108,17 +108,25 @@ class Downloader(InterfaceActionBase):
 
         from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
         downloader = BeamEbooksDownloader(prefs, self.version)
-        downloader.login()
 
-        if downloader.successful_login == False:
-            print "Failed to log in..."
-        else:
-            print "Parsing document tree now..."
-            # Temporarily...
-            # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/bibuebersicht.php5?user=" + downloader.beamid)
-            # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/pakete.php5?user=" + downloader.beamid)
-            downloader.recursive_descent(prefs[prefs.URLBASE])
-            # downloader.recursive_descent(prefs[prefs.URLBASE] + "/kunden/abos.php5")
-            downloader.download_ebooks()
+        # Loop over all accounts until we have support for selection
+        for account_id in prefs[prefs.ACCOUNTS]:
+            account = prefs[prefs.ACCOUNTS][account_id]
+            account[prefs.ACCOUNT_ID] = account_id
+            print "Account: '%s'" % account
+
+            if account[prefs.ENABLED]:
+                downloader.login(account)
+
+                if downloader.successful_login == False:
+                    print "Failed to log in..."
+                else:
+                    print "Parsing document tree now..."
+                    # Temporarily...
+                    # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/bibuebersicht.php5?user=" + downloader.beamid)
+                    # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/pakete.php5?user=" + downloader.beamid)
+                    downloader.recursive_descent(prefs[prefs.URLBASE])
+                    # downloader.recursive_descent(prefs[prefs.URLBASE] + "/kunden/abos.php5")
+                    downloader.download_ebooks()
 
         pass

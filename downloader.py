@@ -42,8 +42,6 @@ class BeamEbooksDownloader():
         self.prefs = prefs
 
         self.urlbase  = prefs[prefs.URLBASE]
-        self.username = prefs[prefs.USERNAME]
-        self.password = prefs[prefs.PASSWORD]
 
         self.beamid = None
         self.successful_login = False
@@ -64,14 +62,12 @@ class BeamEbooksDownloader():
         self.tempdirpath = tempfile.gettempdir() + '/' + 'calibre-beam-ebooks-downloader-plugin'
         print "Saving stuff into '%s'" % (self.tempdirpath)
 
-        self.filenumber = 1000
-
     def save_response(self, response):
         if not os.path.exists(self.tempdirpath):
             os.makedirs(self.tempdirpath)
 
         try:
-            filename = '%s/response-%d.txt' % (self.tempdirpath, self.filenumber)
+            filename = '%s/response-%s-%d.txt' % (self.tempdirpath, self.account_id, self.filenumber)
             self.filenumber = self.filenumber + 1
 
             f = open(filename, 'w')
@@ -91,12 +87,21 @@ class BeamEbooksDownloader():
             print "Unexpected error:", sys.exc_info()[0]
             pass
 
-    def login(self):
+    def login(self, account):
         self.beamid = None
         self.successful_login = False
 
         self.already_visited_links = []
         self.downloadable_ebooks = []
+
+        self.account_id = account[self.prefs.ACCOUNT_ID]
+
+        self.username = account[self.prefs.USERNAME]
+        self.password = account[self.prefs.PASSWORD]
+
+        # Remove all cookies to be extra safe
+        self.browser.cookiejar.clear()
+        self.filenumber = 1000
 
         url  = self.urlbase + "/aldiko/cookisetzen.php"
         print "  URL: '%s'" % (url)
@@ -131,7 +136,7 @@ class BeamEbooksDownloader():
                         # TODO should we verify that the beamid is numeric???
                         self.successful_login = True
 
-        print "Beam ID: '%s', '%s'" % (self.beamid, self.successful_login)
+        # print "Beam ID: '%s', '%s'" % (self.beamid, self.successful_login)
 
     def recursive_descent(self, absolute_url = None, further_descend = True):
         if absolute_url is None:
