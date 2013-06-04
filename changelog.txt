@@ -1,4 +1,4 @@
-[B]Version 1.0.0[/B] - 23 May 2013
+[B]Version 0.5.0[/B] - 04 Jun 2013
 Initial release of Beam Ebooks  plugin
-- functionality fully implemented
-- t.b.d. configurability
+- works good enough on a headless linux server
+
