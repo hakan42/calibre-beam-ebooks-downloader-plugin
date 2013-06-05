@@ -23,12 +23,36 @@ __copyright__ = '2013, Hakan Tandogan <hakan at gurkensalat.com>'
 __docformat__ = 'restructuredtext en'
 
 
-from PyQt4.Qt import (Qt, QDialog, QWidget, QGridLayout, QLabel, QLineEdit)
+from PyQt4.Qt import (Qt, QDialog, QWidget, QGridLayout, QVBoxLayout, QPushButton,
+                      QLabel, QLineEdit, QMessageBox)
 
 
-class DownloadDialog(QWidget):
+class DownloadDialog(QDialog):
 
     def __init__(self, gui, icon, do_user_config):
         QDialog.__init__(self, gui)
         self.gui = gui
         self.do_user_config = do_user_config
+
+        # The current database shown in the GUI
+        self.db = gui.current_db
+
+        # The GUI, created and layouted by hand...
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        self.setWindowTitle('Beam EBooks Downloader')
+        self.setWindowIcon(icon)
+
+        self.conf_button = QPushButton('Configure this plugin', self)
+        self.conf_button.clicked.connect(self.config)
+        self.layout.addWidget(self.conf_button)
+
+        self.resize(self.sizeHint())
+
+
+    def config(self):
+        self.do_user_config(parent=self)
+        # Apply the changes
+        # Not necessary, the downloader will obtain fresh config anyway...
+        # self.label.setText(prefs['hello_world_msg'])
