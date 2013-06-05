@@ -24,6 +24,8 @@ __docformat__ = 'restructuredtext en'
 
 # The class that all Interface Action plugin wrappers must inherit from
 from calibre.gui2.actions import InterfaceAction
+from calibre_plugins.beam_ebooks_downloader.gui import DownloadDialog
+
 
 class BeamEbooksDownloaderAction(InterfaceAction):
 
@@ -43,8 +45,8 @@ class BeamEbooksDownloaderAction(InterfaceAction):
 
         do_user_config = base_plugin_object.do_user_config
 
-        # d = DemoDialog(self.gui, self.qaction.icon(), do_user_config)
-        # d.show()
+        d = DownloadDialog(self.gui, self.qaction.icon(), do_user_config)
+        d.show()
 
     def apply_settings(self):
 
