@@ -150,7 +150,24 @@ class BeamEbooksDownloader():
         if url in self.already_visited_links:
             print "Already have been here ('%s')..." % (url)
         else:
-            print "Visiting ('%s')..." % (url)
+            harvested_urls = self.prefs[self.prefs.HARVESTED_URLS]
+            harvest_state = harvested_urls.get(url)
+            if harvest_state is None:
+                harvest_state = {}
+                self.prefs[self.prefs.HARVESTED_URLS][url] = harvest_state
+                self.prefs.save()
+
+            status = harvest_state.get(self.prefs.HARVEST_STATE)
+            if status is None:
+                harvest_state[self.prefs.HARVEST_STATE] = self.prefs.HARVEST_STATE_REVISIT
+                self.prefs.save()
+
+            title = harvest_state.get(self.prefs.HARVEST_TITLE)
+            if title is None:
+                harvest_state[self.prefs.HARVEST_TITLE] = ""
+                self.prefs.save()
+
+            print "Visiting ('%s', '%s')..." % (url, harvest_state)
             self.visit_url(absolute_url, further_descend)
 
     def visit_url(self, url = None, further_descend = True):

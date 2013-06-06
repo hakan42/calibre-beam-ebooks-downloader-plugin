@@ -51,6 +51,14 @@ class PrefsFacade():
 
     HARVESTED_URLS = 'HarvestedUrls'
 
+    HARVEST_TITLE = 'Title'
+
+    HARVEST_STATE = 'State'
+
+    HARVEST_STATE_REVISIT = 'Revisit'
+
+    HARVEST_STATE_FULLY_HARVESTED = 'FullyHarvested'
+
     DOWNLOADS_PER_SESSION = 'DownloadsPerSession'
 
     def __init__(self, passed_db=None):
