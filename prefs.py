@@ -49,6 +49,8 @@ class PrefsFacade():
 
     ENABLED = 'Enabled'
 
+    HARVESTED_URLS = 'HarvestedUrls'
+
     DOWNLOADS_PER_SESSION = 'DownloadsPerSession'
 
     def __init__(self, passed_db=None):
@@ -71,6 +73,11 @@ class PrefsFacade():
             self[self.ACCOUNTS] = self.default_prefs[self.ACCOUNTS]
             self.save()
 
+        harvested_urls = self[self.HARVESTED_URLS]
+        if harvested_urls is None:
+            self[self.HARVESTED_URLS] = self.default_prefs[self.HARVESTED_URLS]
+            self.save()
+
         url_base = self[self.DOWNLOADS_PER_SESSION]
         if url_base is None:
             self[self.DOWNLOADS_PER_SESSION] = self.default_prefs[self.DOWNLOADS_PER_SESSION]
@@ -81,6 +88,7 @@ class PrefsFacade():
         self.default_prefs = {}
         self.default_prefs[self.URLBASE] = 'http://aldiko.beam-ebooks.de/'
         self.default_prefs[self.ACCOUNTS] = {}
+        self.default_prefs[self.HARVESTED_URLS] = {}
         self.default_prefs[self.DOWNLOADS_PER_SESSION] = 10
 
 
