@@ -36,13 +36,14 @@ from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
 #
 class BeamEbooksDownloader():
 
-    def __init__(self, prefs, version):
+    def __init__(self, prefs, version, caller = None):
         print "Initializing BeamEbooksDownloader()"
         print "  myself: '%s'" % (self)
 
         self.prefs = prefs
-
         self.urlbase  = prefs[prefs.URLBASE]
+
+        self.caller = caller
 
         self.beamid = None
         self.successful_login = False
@@ -104,6 +105,9 @@ class BeamEbooksDownloader():
         self.browser.cookiejar.clear()
         self.filenumber = 1000
 
+        if self.caller is not None:
+            self.caller.notify("Logging in")
+
         url = self.urlbase + "/aldiko/cookisetzen.php"
         url = norms(url)
         print "  URL: '%s'" % (url)
@@ -137,6 +141,7 @@ class BeamEbooksDownloader():
                         self.beamid = cookie.value
                         # TODO should we verify that the beamid is numeric???
                         self.successful_login = True
+                        self.caller.notify("Login Successful")
 
         # print "Beam ID: '%s', '%s'" % (self.beamid, self.successful_login)
 
@@ -145,6 +150,8 @@ class BeamEbooksDownloader():
             url  = self.urlbase
         else:
             url  = absolute_url
+
+        caller = self.caller
 
         url = norms(url)
         if url in self.already_visited_links:
@@ -167,7 +174,9 @@ class BeamEbooksDownloader():
                 harvest_state[self.prefs.HARVEST_TITLE] = ""
                 self.prefs.save()
 
-            print "Visiting ('%s', '%s')..." % (url, harvest_state)
+            if caller is not None:
+                caller.notify("Visiting ('%s', '%s')..." % (url, harvest_state))
+
             self.visit_url(absolute_url, further_descend)
 
     def visit_url(self, url = None, further_descend = True):
@@ -289,6 +298,8 @@ class BeamEbooksDownloader():
         db = self.prefs._get_db()
         print "Library database object is (%s)" % (db)
 
+        caller = self.caller
+
         adder = EBookAdder(self.prefs, "beam-ebooks")
 
         adder.load_books()
@@ -309,7 +320,8 @@ class BeamEbooksDownloader():
                 if handled_ebooks < self.prefs[self.prefs.DOWNLOADS_PER_SESSION]:
                     handled_ebooks = handled_ebooks + 1
                     # Still in quota for this run
-                    print "Working on book %d: %s" % (handled_ebooks, beamebooks_id)
+                    if caller is not None:
+                        caller.notify("Working on book %d: %s" % (handled_ebooks, beamebooks_id))
 
                     if mimetype == 'application/epub+zip':
                         ext = 'epub'
@@ -326,4 +338,5 @@ class BeamEbooksDownloader():
                 else:
                     continue
 
-        print "Handled (%d of %d) books, waiting for next run" % (handled_ebooks, len(self.downloadable_ebooks))
+        if caller is not None:
+            caller.notify("Handled (%d of %d) books, waiting for next run" % (handled_ebooks, len(self.downloadable_ebooks)))

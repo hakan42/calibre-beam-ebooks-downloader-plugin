@@ -86,6 +86,9 @@ class Downloader(InterfaceActionBase):
         if ac is not None:
             ac.apply_settings()
 
+    def notify(self, message):
+        print "Notified of: %s" % (message)
+
 
     def cli_main(self, argv):
         from calibre.utils.config import prefs as calibre_prefs
@@ -107,7 +110,7 @@ class Downloader(InterfaceActionBase):
         print 'Calibre Prefs are (%s)' % (calibre_prefs)
         print '    methods are (%s)' % (dir(calibre_prefs))
 
-        downloader = BeamEbooksDownloader(prefs, self.version)
+        downloader = BeamEbooksDownloader(prefs, self.version, caller = self)
 
         # Loop over all accounts until we have support for selection
         for account_id in prefs[prefs.ACCOUNTS]:
