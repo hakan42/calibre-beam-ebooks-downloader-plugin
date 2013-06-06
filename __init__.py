@@ -25,6 +25,9 @@ __docformat__ = 'restructuredtext en'
 # The class that all Interface Action plugin wrappers must inherit from
 from calibre.customize import InterfaceActionBase
 from calibre.library import db
+from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
+from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
+
 
 # Apparently the name for this class doesn't matter
 class Downloader(InterfaceActionBase):
@@ -104,7 +107,6 @@ class Downloader(InterfaceActionBase):
         print 'Calibre Prefs are (%s)' % (calibre_prefs)
         print '    methods are (%s)' % (dir(calibre_prefs))
 
-        from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
         downloader = BeamEbooksDownloader(prefs, self.version)
 
         # Loop over all accounts until we have support for selection
@@ -123,7 +125,7 @@ class Downloader(InterfaceActionBase):
                     # Temporarily...
                     # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/bibuebersicht.php5?user=" + downloader.beamid)
                     # downloader.recursive_descent(prefs[prefs.URLBASE] + "/aldiko/pakete.php5?user=" + downloader.beamid)
-                    downloader.recursive_descent(prefs[prefs.URLBASE])
+                    downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
                     # downloader.recursive_descent(prefs[prefs.URLBASE] + "/kunden/abos.php5")
                     downloader.download_ebooks()
 

@@ -31,6 +31,7 @@ import re
 from calibre.ebooks.BeautifulSoup import BeautifulSoup
 from calibre import browser
 from calibre_plugins.beam_ebooks_downloader.adder import EBookAdder
+from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
 
 #
 class BeamEbooksDownloader():
@@ -103,7 +104,8 @@ class BeamEbooksDownloader():
         self.browser.cookiejar.clear()
         self.filenumber = 1000
 
-        url  = self.urlbase + "/aldiko/cookisetzen.php"
+        url = self.urlbase + "/aldiko/cookisetzen.php"
+        url = norms(url)
         print "  URL: '%s'" % (url)
 
         print "Browser: '%s'" % (self.browser)
@@ -144,6 +146,7 @@ class BeamEbooksDownloader():
         else:
             url  = absolute_url
 
+        url = norms(url)
         if url in self.already_visited_links:
             print "Already have been here ('%s')..." % (url)
         else:
@@ -181,6 +184,7 @@ class BeamEbooksDownloader():
                 if match:
                     href = self.extract_link(entry)
                     if href:
+                        href = norms(href)
                         print "          Seems to be a followable link ('%s')" % (href)
                         links_to_visit.append(href)
 
@@ -188,6 +192,7 @@ class BeamEbooksDownloader():
                 if match:
                     href = self.extract_link(entry)
                     if href:
+                        href = norms(href)
                         print "          Seems to be a followable link ('%s')" % (href)
                         links_to_visit.append(href)
 
@@ -195,6 +200,7 @@ class BeamEbooksDownloader():
                 if match:
                     (href, mimetype) = self.extract_link(entry)
                     if href:
+                        href = norms(href)
                         match = re.search('\/download\.php5\?.*$', href)
                         if match:
                             print "          Seems to be an ebook ('%s', '%s')" % (mimetype, href)
@@ -210,6 +216,7 @@ class BeamEbooksDownloader():
         # Finally, visit all pages that we encountered
         if further_descend:
             for link in links_to_visit:
+                link = norms(link)
                 self.recursive_descent(link)
 
     def extract_link(self, entry):
