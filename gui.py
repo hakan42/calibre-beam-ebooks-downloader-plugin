@@ -26,6 +26,11 @@ __docformat__ = 'restructuredtext en'
 from PyQt4.Qt import (Qt, QDialog, QWidget, QGridLayout, QVBoxLayout, QPushButton,
                       QLabel, QLineEdit, QMessageBox, QTextEdit)
 
+from calibre_plugins.beam_ebooks_downloader import Downloader
+from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
+from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
+from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
+
 
 class DownloadDialog(QDialog):
 
@@ -37,6 +42,10 @@ class DownloadDialog(QDialog):
         # The current database shown in the GUI
         self.db = gui.current_db
 
+        self.prefs = PrefsFacade(self.db)
+
+        self.version = Downloader.version
+
         # The GUI, created and layouted by hand...
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -47,7 +56,7 @@ class DownloadDialog(QDialog):
         self.log_area = QTextEdit('Log output', self)
         self.log_area.setReadOnly(True)
         self.log_area.setLineWrapMode(QTextEdit.NoWrap);
-        self.log_area.setText("Blah")
+        self.log_area.setText("")
         self.layout.addWidget(self.log_area)
 
         self.download_button = QPushButton('Download books', self)
@@ -68,10 +77,36 @@ class DownloadDialog(QDialog):
         # self.label.setText(prefs['hello_world_msg'])
 
 
-    def download(self):
-        print "Download button clicked (%s)" % (self)
+    def notify(self, message = None):
+        if message is not None:
+            # insertPlainText inserts at the beginning of the log area...
+            self.log_area.append(message)
+            sb = self.log_area.verticalScrollBar()
+            sb.setValue(sb.maximum())
 
-        # insertPlainText inserts at the beginning of the log area...
-        self.log_area.append("Another Click...")
-        sb = self.log_area.verticalScrollBar()
-        sb.setValue(sb.maximum())
+
+    def download(self):
+        prefs = self.prefs
+        # self.log("Prefs are: %s" % (self.prefs))
+        # self.log("Version is: (%s,%s,%s)" % (self.version))
+
+        downloader = BeamEbooksDownloader(self.prefs, self.version, caller = self)
+        # self.log("Downloader is: %s" % (downloader))
+
+        # Loop over all accounts until we have support for selection
+        for account_id in prefs[prefs.ACCOUNTS]:
+            account = prefs[prefs.ACCOUNTS][account_id]
+            account[prefs.ACCOUNT_ID] = account_id
+            # self.notify("Account: '%s'" % account)
+
+            if account[prefs.ENABLED]:
+                self.notify("Account: '%s'" % account[prefs.USERNAME])
+                downloader.login(account)
+
+                if downloader.successful_login == False:
+                    self.notify("Failed to log in...")
+                else:
+                    self.notify("Scanning (beam) private library now...")
+                    downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
+
+        self.notify("Finished synchronizing")
