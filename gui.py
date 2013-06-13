@@ -24,7 +24,7 @@ __docformat__ = 'restructuredtext en'
 
 
 from PyQt4.Qt import (Qt, QDialog, QWidget, QGridLayout, QVBoxLayout, QPushButton,
-                      QLabel, QLineEdit, QMessageBox)
+                      QLabel, QLineEdit, QMessageBox, QTextEdit)
 
 
 class DownloadDialog(QDialog):
@@ -44,6 +44,16 @@ class DownloadDialog(QDialog):
         self.setWindowTitle('Beam EBooks Downloader')
         self.setWindowIcon(icon)
 
+        self.log_area = QTextEdit('Log output', self)
+        self.log_area.setReadOnly(True)
+        self.log_area.setLineWrapMode(QTextEdit.NoWrap);
+        self.log_area.setText("Blah")
+        self.layout.addWidget(self.log_area)
+
+        self.download_button = QPushButton('Download books', self)
+        self.download_button.clicked.connect(self.download)
+        self.layout.addWidget(self.download_button)
+
         self.conf_button = QPushButton('Configure this plugin', self)
         self.conf_button.clicked.connect(self.config)
         self.layout.addWidget(self.conf_button)
@@ -56,3 +66,12 @@ class DownloadDialog(QDialog):
         # Apply the changes
         # Not necessary, the downloader will obtain fresh config anyway...
         # self.label.setText(prefs['hello_world_msg'])
+
+
+    def download(self):
+        print "Download button clicked (%s)" % (self)
+
+        # insertPlainText inserts at the beginning of the log area...
+        self.log_area.append("Another Click...")
+        sb = self.log_area.verticalScrollBar()
+        sb.setValue(sb.maximum())
