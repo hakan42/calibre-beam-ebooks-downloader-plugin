@@ -25,6 +25,7 @@ __docformat__ = 'restructuredtext en'
 
 from calibre.utils.config import JSONConfig
 from calibre.gui2.ui import get_gui
+from calibre_plugins.beam_ebooks_downloader.xor import xor_crypt_string
 
 SCHEMA_VERSION = 'SchemaVersion'
 DEFAULT_SCHEMA_VERSION = 1.0
@@ -62,9 +63,10 @@ class PrefsFacade():
     DOWNLOADS_PER_SESSION = 'DownloadsPerSession'
 
     def __init__(self, passed_db=None):
-        self.libraryid = None
         self.plugin_prefs = plugin_prefs
         self.passed_db = passed_db
+
+        self.libraryid = self.get_library_uuid()
 
         # Set defaults
         self._init_defaults()
@@ -108,6 +110,18 @@ class PrefsFacade():
             plugin_prefs[SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
             # And now, do some migration stuff...
 
+        accounts = self[self.ACCOUNTS]
+        if accounts is not None:
+            for account_id in accounts:
+                account = accounts[account_id]
+                password = account.get(self.PASSWORD, None)
+                if password is not None:
+                    account[self.OBFUSCATED_PASSWORD] = self.encrypt_password(password) 
+                    account[self.PASSWORD] = None
+                    del account[self.PASSWORD]
+                    self.save()
+
+
     def _get_db(self):
         if self.passed_db:
             return self.passed_db
@@ -140,6 +154,18 @@ class PrefsFacade():
         except:
             library_uuid = ''
         return library_uuid
+
+
+    def encrypt_password(self, password):
+        key = self.libraryid
+        # print "Encryption Key: %s" % (key)
+        return xor_crypt_string(password, key, encode = True, decode = False)
+
+
+    def decrypt_password(self, password):
+        key = self.libraryid
+        # print "Decryption Key: %s" % (key)
+        return xor_crypt_string(password, key, encode = False, decode = True)
 
 
     def save(self):

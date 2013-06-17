@@ -99,7 +99,7 @@ class BeamEbooksDownloader():
         self.account_id = account[self.prefs.ACCOUNT_ID]
 
         self.username = account[self.prefs.USERNAME]
-        self.password = account[self.prefs.PASSWORD]
+        self.password = self.prefs.decrypt_password(account[self.prefs.OBFUSCATED_PASSWORD])
 
         # Remove all cookies to be extra safe
         self.browser.cookiejar.clear()

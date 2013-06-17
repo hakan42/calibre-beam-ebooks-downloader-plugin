@@ -64,8 +64,10 @@ class ConfigWidget(QWidget):
         self.layout.addWidget(self.labelPassword, 2, 0)
 
         self.password = QLineEdit(self)
-        if account.get(prefs.PASSWORD) is not None:
-            self.password.setText(account[prefs.PASSWORD])
+        if account.get(prefs.OBFUSCATED_PASSWORD) is not None:
+            decrypted = prefs.decrypt_password(account[prefs.OBFUSCATED_PASSWORD])
+            self.password.setText(decrypted)
+
         self.layout.addWidget(self.password, 2, 1)
         self.labelPassword.setBuddy(self.password)
 
@@ -82,8 +84,9 @@ class ConfigWidget(QWidget):
         account = accounts.get(account_id, {})
         account[self.prefs.ACCOUNT_ID] = account_id
         account[self.prefs.USERNAME] = '%s' % self.username.text()
-        account[self.prefs.PASSWORD] = '%s' % self.password.text()
-        account[self.prefs.OBFUSCATED_PASSWORD] = '%s' % self.password.text() 
+        decrypted = '%s' % self.password.text()
+        # account['Lala'] = decrypted
+        account[self.prefs.OBFUSCATED_PASSWORD] = '%s' % self.prefs.encrypt_password(decrypted) 
         account[self.prefs.ENABLED] = True
         accounts[account_id] = account
 
@@ -93,8 +96,9 @@ class ConfigWidget(QWidget):
         account[self.prefs.ACCOUNT_ID] = account_id
         if account.get(self.prefs.USERNAME) is None:
             account[self.prefs.USERNAME] = ''
-            account[self.prefs.PASSWORD] = ''
-            account[self.prefs.OBFUSCATED_PASSWORD] = ''
+            decrypted = ''
+            # account['Lala'] = decrypted
+            account[self.prefs.OBFUSCATED_PASSWORD] = '%s' % self.prefs.encrypt_password(decrypted) 
             account[self.prefs.ENABLED] = False
         accounts[account_id] = account
 
