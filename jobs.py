@@ -23,12 +23,22 @@ __copyright__ = '2013, Hakan Tandogan <hakan at gurkensalat.com>'
 __docformat__ = 'restructuredtext en'
 
 # The class that all Interface Action plugin wrappers must inherit from
+from calibre.gui2.ui import get_gui
 from calibre.utils.ipc.server import Server
+
+from calibre_plugins.beam_ebooks_downloader import Downloader
+from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
+from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
+from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
 
 
 def do_mirror(cpus, account, notification=lambda x, y:x):
     print "do_mirror in jobs.py"
-    print "File: %s" % (__file__)
+
+    # version = Downloader.version
+    # print "version is: (%d,%d,%d)" % (version)
+
+    # print "Dir: %s" % (dir())
 
     '''
     Master job, to launch child jobs to count pages in this list of books
@@ -38,5 +48,24 @@ def do_mirror(cpus, account, notification=lambda x, y:x):
     print "Server is: %s" % (server)
 
     print "Account is: %s" % (account)
+    # print "Downloader is: %s" % (downloader)
 
-    
+    # This server is an arbitrary_n job, so there is a notifier available.
+    # Set the % complete to a small number to avoid the 'unavailable' indicator
+    notification(0.01, "Starting up...")
+
+    from calibre.library import db
+    from calibre.utils.config import prefs
+    prefs.refresh()
+    db = db(read_only=False)
+
+    print "DB is: %s" % (db)
+
+    prefs = PrefsFacade(db)
+    print "Prefs are: %s" % (prefs)
+    print "Library id is (%s)" % (prefs.get_library_uuid())
+
+    print "GUI might be: %s" % (get_gui())
+
+    # downloader = BeamEbooksDownloader(self.prefs, self.version, caller = self)
+    # self.log("Downloader is: %s" % (downloader))
