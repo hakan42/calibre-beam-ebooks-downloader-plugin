@@ -26,6 +26,7 @@ __docformat__ = 'restructuredtext en'
 from PyQt4.Qt import (Qt, QDialog, QWidget, QGridLayout, QVBoxLayout, QPushButton,
                       QLabel, QLineEdit, QMessageBox, QTextEdit)
 
+from calibre.gui2 import Dispatcher
 from calibre_plugins.beam_ebooks_downloader import Downloader
 from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
 from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
@@ -90,23 +91,44 @@ class DownloadDialog(QDialog):
         # self.log("Prefs are: %s" % (self.prefs))
         # self.log("Version is: (%s,%s,%s)" % (self.version))
 
-        downloader = BeamEbooksDownloader(self.prefs, self.version, caller = self)
+        # downloader = BeamEbooksDownloader(self.prefs, self.version, caller = self)
         # self.log("Downloader is: %s" % (downloader))
 
         # Loop over all accounts until we have support for selection
         for account_id in prefs[prefs.ACCOUNTS]:
             account = prefs[prefs.ACCOUNTS][account_id]
             account[prefs.ACCOUNT_ID] = account_id
-            # self.notify("Account: '%s'" % account)
 
             if account[prefs.ENABLED]:
-                self.notify("Account: '%s'" % account[prefs.USERNAME])
-                downloader.login(account)
+                self.enqueue(account)
 
-                if downloader.successful_login == False:
-                    self.notify("Failed to log in...")
-                else:
-                    self.notify("Scanning (beam) private library now...")
-                    downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
 
-        self.notify("Finished synchronizing")
+    def enqueue(self, account):
+        prefs = self.prefs
+
+        self.notify("Account: '%s'" % account[prefs.USERNAME])
+        # downloader.login(account)
+
+        func = 'arbitrary_n'
+        # func = 'arbitrary'
+        cpus = self.gui.job_manager.server.pool_size
+        print "CPUs: %s" % (cpus)
+        args = ['calibre_plugins.beam_ebooks_downloader.jobs', 'do_mirror', (cpus, account)]
+        desc = 'Beam EBooks Downloader'
+        job = self.gui.job_manager.run_job(Dispatcher(self._done), func, args=args, description=desc)
+        print "Job: %s" % (job)
+
+        self.notify("  Launched Download")
+
+        # if downloader.successful_login == False:
+        #     self.notify("Failed to log in...")
+        # else:
+        #     self.notify("Scanning (beam) private library now...")
+        #     downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
+
+    def _done(self, foo):
+        print "Done Downloading"
+        print "File: %s" % (__file__)
+        print "Self: %s" % (self)
+        print "Foo: %s" % (foo)
+        self.notify("Finished Download Jobs...")
