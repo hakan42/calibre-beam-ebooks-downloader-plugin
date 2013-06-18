@@ -88,11 +88,13 @@ class DownloadDialog(QDialog):
 
     def download(self):
         prefs = self.prefs
-        # self.log("Prefs are: %s" % (self.prefs))
-        # self.log("Version is: (%s,%s,%s)" % (self.version))
 
-        # downloader = BeamEbooksDownloader(self.prefs, self.version, caller = self)
-        # self.log("Downloader is: %s" % (downloader))
+        # self.hide()
+        self.download_button.setEnabled(False)
+        self.conf_button.setEnabled(False)
+
+        downloader = BeamEbooksDownloader(self.prefs, self.version, caller = self)
+        self.notify("Downloader is: %s" % (downloader))
 
         # Loop over all accounts until we have support for selection
         for account_id in prefs[prefs.ACCOUNTS]:
@@ -100,10 +102,10 @@ class DownloadDialog(QDialog):
             account[prefs.ACCOUNT_ID] = account_id
 
             if account[prefs.ENABLED]:
-                self.enqueue(account)
+                self.enqueue(account, downloader)
 
 
-    def enqueue(self, account):
+    def enqueue(self, account, downloader):
         prefs = self.prefs
 
         self.notify("Account: '%s'" % account[prefs.USERNAME])
@@ -131,4 +133,7 @@ class DownloadDialog(QDialog):
         print "File: %s" % (__file__)
         print "Self: %s" % (self)
         print "Foo: %s" % (foo)
-        self.notify("Finished Download Jobs...")
+        self.notify("  Finished Download Jobs...")
+
+        self.download_button.setEnabled(True)
+        self.conf_button.setEnabled(True)
