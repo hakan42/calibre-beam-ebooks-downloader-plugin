@@ -27,6 +27,7 @@ from PyQt4.Qt import (Qt, QDialog, QWidget, QGridLayout, QVBoxLayout, QPushButto
                       QLabel, QLineEdit, QMessageBox, QTextEdit)
 
 from calibre.gui2 import Dispatcher
+from calibre.gui2.ui import get_gui
 from calibre_plugins.beam_ebooks_downloader import Downloader
 from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
 from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
@@ -89,7 +90,6 @@ class DownloadDialog(QDialog):
     def download(self):
         prefs = self.prefs
 
-        # self.hide()
         self.download_button.setEnabled(False)
         self.conf_button.setEnabled(False)
 
@@ -103,6 +103,8 @@ class DownloadDialog(QDialog):
 
             if account[prefs.ENABLED]:
                 self.enqueue(account, downloader)
+
+        self.hide()
 
 
     def enqueue(self, account, downloader):
@@ -130,11 +132,25 @@ class DownloadDialog(QDialog):
 
     def _done(self, job):
         print "Done Downloading"
-        print "File: %s" % (__file__)
         print "Self: %s" % (self)
         print "Job: %s" % (job)
-        print "  Result: %s" % (job.result)
+        # print "  Result: %s" % (job.result)
+        print "  Result: %s" % (len(job.result))
         self.notify("  Finished download catalog...")
 
         self.download_button.setEnabled(True)
         self.conf_button.setEnabled(True)
+
+        payload = job.result
+        msg = "Parsing OPDS Catalog complete, found %s ebooks" % (len(job.result))
+
+        # question_dialog
+        self.gui.proceed_question(self._done_step_2, payload, job.details,
+                    'OPDS Download Log', 'OPDS parse complete', msg, show_copy_button = False)
+
+    def _done_step_2(self, payload):
+        print "Done Downloading, Step 2"
+        print "Self: %s" % (self)
+        # print "Payload: %s" % (payload)
+        # Printing the complete payload at once gives [IOError 12] - Out of space (memory, that is...)
+        self.notify("  Finished adding books...")

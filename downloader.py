@@ -183,6 +183,9 @@ class BeamEbooksDownloader():
 
             self.visit_url(absolute_url, further_descend)
 
+        # In any case, return a list of ebooks to download
+        return self.downloadable_ebooks
+
     def visit_url(self, url = None, further_descend = True):
         print "  URL: '%s'" % (url)
 
@@ -250,8 +253,7 @@ class BeamEbooksDownloader():
                 self.recursive_descent(link)
 
         # In any case, return the links we had to visit...
-        # return links_to_visit
-        return self.downloadable_ebooks
+        return links_to_visit
 
     def extract_link(self, entry):
         linklist = entry.findAll('link', href = True, type = True)
