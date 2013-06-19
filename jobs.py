@@ -26,7 +26,6 @@ __docformat__ = 'restructuredtext en'
 from calibre.gui2.ui import get_gui
 from calibre.utils.ipc.server import Server
 
-from calibre_plugins.beam_ebooks_downloader import Downloader
 from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
 from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
 from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
@@ -67,5 +66,31 @@ def do_mirror(cpus, account, notification=lambda x, y:x):
 
     print "GUI might be: %s" % (get_gui())
 
-    # downloader = BeamEbooksDownloader(self.prefs, self.version, caller = self)
-    # self.log("Downloader is: %s" % (downloader))
+    reporter = ConsoleReporter()
+    downloader = BeamEbooksDownloader(prefs, caller = reporter)
+    print "-- LALA -- Downloader is: %s" % (downloader)
+
+    if account[prefs.ENABLED]:
+        downloader.login(account)
+
+        if downloader.successful_login == False:
+            notification(1.00, "Failed to log in...")
+        else:
+            notification(0.05, "Parsing document tree now...")
+            links_to_visit = downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
+            notification(0.50, "Loaded OPDS pages")
+            reporter.notify(links_to_visit)
+            #
+            # Now, download the obtained ebooks...
+
+    notification(1.00, "Done...")
+
+
+class ConsoleReporter(object):
+
+    def __init__(self):
+        pass
+
+    def notify(self, message = None):
+        if message is not None:
+            print "Notified of: %s" % (message)
