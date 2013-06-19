@@ -36,12 +36,16 @@ from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
 #
 class BeamEbooksDownloader():
 
-    def __init__(self, prefs, version, caller = None):
+    def __init__(self, prefs, version = None, caller = None):
         print "Initializing BeamEbooksDownloader()"
         print "  myself: '%s'" % (self)
 
         self.prefs = prefs
         self.urlbase  = prefs[prefs.URLBASE]
+
+        if version is None:
+            from calibre_plugins.beam_ebooks_downloader import Downloader
+            version = Downloader.version
 
         self.caller = caller
 
@@ -244,6 +248,9 @@ class BeamEbooksDownloader():
             for link in links_to_visit:
                 link = norms(link)
                 self.recursive_descent(link)
+
+        # In any case, return the links we had to visit...
+        return links_to_visit
 
     def extract_link(self, entry):
         linklist = entry.findAll('link', href = True, type = True)
