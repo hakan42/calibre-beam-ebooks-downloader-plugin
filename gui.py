@@ -120,7 +120,7 @@ class DownloadDialog(QDialog):
         job = self.gui.job_manager.run_job(Dispatcher(self._done), func, args=args, description=desc)
         print "Job: %s" % (job)
 
-        self.notify("  Launched Download")
+        self.notify("  Start parsing OPDS catalog")
 
         # if downloader.successful_login == False:
         #     self.notify("Failed to log in...")
@@ -128,12 +128,13 @@ class DownloadDialog(QDialog):
         #     self.notify("Scanning (beam) private library now...")
         #     downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
 
-    def _done(self, foo):
+    def _done(self, job):
         print "Done Downloading"
         print "File: %s" % (__file__)
         print "Self: %s" % (self)
-        print "Foo: %s" % (foo)
-        self.notify("  Finished Download Jobs...")
+        print "Job: %s" % (job)
+        print "  Result: %s" % (job.result)
+        self.notify("  Finished download catalog...")
 
         self.download_button.setEnabled(True)
         self.conf_button.setEnabled(True)

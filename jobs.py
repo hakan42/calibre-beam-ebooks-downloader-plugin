@@ -77,13 +77,14 @@ def do_mirror(cpus, account, notification=lambda x, y:x):
             notification(1.00, "Failed to log in...")
         else:
             notification(0.05, "Parsing document tree now...")
-            links_to_visit = downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
+            downloadable_ebooks = downloader.recursive_descent(norms(prefs[prefs.URLBASE]))
             notification(0.50, "Loaded OPDS pages")
-            reporter.notify(links_to_visit)
+            reporter.notify(downloadable_ebooks)
             #
             # Now, download the obtained ebooks...
 
     notification(1.00, "Done...")
+    return downloadable_ebooks
 
 
 class ConsoleReporter(object):

@@ -250,7 +250,8 @@ class BeamEbooksDownloader():
                 self.recursive_descent(link)
 
         # In any case, return the links we had to visit...
-        return links_to_visit
+        # return links_to_visit
+        return self.downloadable_ebooks
 
     def extract_link(self, entry):
         linklist = entry.findAll('link', href = True, type = True)
