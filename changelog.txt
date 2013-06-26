@@ -1,4 +1,8 @@
+[B]Version 0.6.0[/B] - xx Jun 2013
+First version for friendly beta test
+- works good enough on a headless linux server
+
 [B]Version 0.5.0[/B] - 04 Jun 2013
-Initial release of Beam Ebooks  plugin
+Good enough to scratch my own itch
 - works good enough on a headless linux server
 
