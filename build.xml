@@ -69,4 +69,10 @@
 	<target name="test-plugin-cmdline" depends="test-plugin-cmdline-help,test-plugin-cmdline-default">
 	</target>
 
+	<target name="upload-to-bintray">
+		<loadproperties srcfile="${user.home}/.bintray/auth.properties" />
+		<echo message="${bintray.username}" />
+		<echo message="${bintray.api_key}" />
+	</target>
+
 </project>
