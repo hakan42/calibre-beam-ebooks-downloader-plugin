@@ -69,10 +69,28 @@
 	<target name="test-plugin-cmdline" depends="test-plugin-cmdline-help,test-plugin-cmdline-default">
 	</target>
 
-	<target name="upload-to-bintray">
+	<target name="upload-to-bintray" depends="package">
 		<loadproperties srcfile="${user.home}/.bintray/auth.properties" />
-		<echo message="${bintray.username}" />
-		<echo message="${bintray.api_key}" />
+
+		<loadfile property="init_py" srcfile="${basedir}/__init__.py" />
+		<propertyregex property="version" input="${init_py}" regexp="( version = \()([^\,]*), ([^\,]*), ([^\)]*)\)" select="\2.\3.\4" />
+
+		<property name="bintray.packagename" value="calibre-beam-ebooks-downloader-plugin" />
+
+		<exec executable="curl">
+			<!-- <arg value=" - - verbose" /> -->
+
+			<!-- Should be optional, or not here at all actually... -->
+			<arg value="--insecure" />
+
+			<arg value="--upload-file" />
+			<arg value="build/${ant.project.name}-${version}.zip" />
+
+			<arg value="--user" />
+			<arg value="${bintray.username}:${bintray.api_key}" />
+
+			<arg value="https://api.bintray.com/content/${bintray.username}/calibre/${bintray.packagename}/${version}/${ant.project.name}-${version}.zip" />
+		</exec>
 	</target>
 
 </project>
