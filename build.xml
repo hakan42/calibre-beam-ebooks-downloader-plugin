@@ -78,7 +78,7 @@
 		<property name="bintray.packagename" value="calibre-beam-ebooks-downloader-plugin" />
 
 		<exec executable="curl">
-			<!-- <arg value=" - - verbose" /> -->
+			<arg value="--verbose" />
 
 			<!-- Should be optional, or not here at all actually... -->
 			<arg value="--insecure" />
@@ -89,7 +89,13 @@
 			<arg value="--user" />
 			<arg value="${bintray.username}:${bintray.api_key}" />
 
-			<arg value="https://api.bintray.com/content/${bintray.username}/calibre/${bintray.packagename}/${version}/${ant.project.name}-${version}.zip" />
+			<arg value="-H" />
+			<arg value="X-Bintray-Package:${bintray.packagename}" />
+
+			<arg value="-H" />
+			<arg value="X-Bintray-Version:${version}" />
+
+			<arg value="https://api.bintray.com/content/${bintray.username}/calibre/${ant.project.name}-${version}.zip" />
 		</exec>
 	</target>
 
