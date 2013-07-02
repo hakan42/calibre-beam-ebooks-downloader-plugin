@@ -3,7 +3,9 @@
 export CALIBRE_DEVELOP_FROM=${HOME}/github/calibre/src
 export DISPLAY=:1
 
-LOGDIR=${HOME}/Dropbox/Calibre/_plugin_logs/beam-ebooks-downloader/$(date +%Y%m)/$(date +%Y%m%d-%H%M)
+# LOGDIR=${HOME}/Dropbox/Calibre
+LOGDIR=${HOME}/tmp
+LOGDIR=${LOGDIR}/_plugin_logs/beam-ebooks-downloader/$(date +%Y%m)/$(date +%Y%m%d-%H%M)
 
 mkdir -p ${LOGDIR}
 
