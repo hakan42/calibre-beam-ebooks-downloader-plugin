@@ -142,7 +142,8 @@ class DownloadDialog(QDialog):
         self.conf_button.setEnabled(True)
 
         payload = job.result
-        msg = "Parsing OPDS Catalog complete, found %s ebooks" % (len(job.result))
+        msg = "Parsing OPDS Catalog complete, found %s ebooks." % (len(job.result))
+        msg = msg + "<br>Do you want to import the books into the library?"
 
         # question_dialog
         self.gui.proceed_question(self._done_step_2, payload, job.details,
