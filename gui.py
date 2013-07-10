@@ -135,8 +135,14 @@ class DownloadDialog(QDialog):
         print "Self: %s" % (self)
         print "Job: %s" % (job)
         # print "  Result: %s" % (job.result)
-        print "  Result: %s" % (len(job.result))
+        # print "  Result: %s" % (len(job.result))
         self.notify("  Finished download catalog...")
+
+        if job.result is not None:
+            for entry in job.result:
+                beamebooks_id = entry['id']
+                message = "<br/>Ebook # %s" % (beamebooks_id)
+                self.notify(message)
 
         self.download_button.setEnabled(True)
         self.conf_button.setEnabled(True)
@@ -146,12 +152,15 @@ class DownloadDialog(QDialog):
         msg = msg + "<br>Do you want to import the books into the library?"
 
         # question_dialog
-        self.gui.proceed_question(self._done_step_2, payload, job.details,
+        self.gui.proceed_question(self._add_ebooks, payload, job.details,
                     'OPDS Download Log', 'OPDS parse complete', msg, show_copy_button = False)
 
-    def _done_step_2(self, payload):
+
+    def _add_ebooks(self, payload):
         print "Done Downloading, Step 2"
         print "Self: %s" % (self)
         # print "Payload: %s" % (payload)
         # Printing the complete payload at once gives [IOError 12] - Out of space (memory, that is...)
         self.notify("  Finished adding books...")
+        for entry in payload:
+            print "Entry: %s" % entry
