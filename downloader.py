@@ -241,6 +241,10 @@ class BeamEbooksDownloader():
                             data['urn']      = contents
                             data['href']     = href
                             data['mimetype'] = mimetype
+
+                            foo = re.split(':', contents)
+                            data['id'] = foo[3]
+
                             self.downloadable_ebooks.append(data)
                         else:
                             print "          Seems to be a followable link ('%s')" % (href)
