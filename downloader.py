@@ -314,21 +314,16 @@ class BeamEbooksDownloader():
 
         caller = self.caller
 
-        adder = EBookAdder(self.prefs, "beam-ebooks")
+        self.adder = EBookAdder(self.prefs, "beam-ebooks")
 
-        adder.load_books()
+        self.adder.load_books()
 
         handled_ebooks = 0
         for entry in self.downloadable_ebooks:
 
-            urn = entry['urn']
-            href = entry['href']
-            mimetype = entry['mimetype']
+            beamebooks_id = entry['id']
 
-            foo = re.split(':', urn)
-            beamebooks_id = foo[3]
-
-            book = adder.books_of_this_shop.get(beamebooks_id)
+            book = self.adder.books_of_this_shop.get(beamebooks_id)
             if book is None:
                 # Book not found, fetch and try to store in into the database
                 if handled_ebooks < self.prefs[self.prefs.DOWNLOADS_PER_SESSION]:
@@ -337,20 +332,32 @@ class BeamEbooksDownloader():
                     if caller is not None:
                         caller.notify("Working on book %d: %s" % (handled_ebooks, beamebooks_id))
 
-                    if mimetype == 'application/epub+zip':
-                        ext = 'epub'
-                    else:
-                        ext = 'bin'
-
-                    path = self.tempdirpath + "/" + beamebooks_id + "." + ext
-                    if os.path.exists(path) == False:
-                        print "Have to download %s, %s, %s" % (beamebooks_id, mimetype, href)
-                        self.browser.retrieve(href, path)
-
-                    adder.add(path, beamebooks_id)
+                    self.download_ebook(entry)
 
                 else:
                     continue
 
         if caller is not None:
             caller.notify("Handled (%d of %d) books, waiting for next run" % (handled_ebooks, len(self.downloadable_ebooks)))
+
+
+    # Now, mirror one single ebook whose id will be passed into this method
+    def download_ebook(self, entry):
+
+        # urn = entry['urn']
+        href = entry['href']
+        mimetype = entry['mimetype']
+
+        beamebooks_id = entry['id']
+
+        if mimetype == 'application/epub+zip':
+            ext = 'epub'
+        else:
+            ext = 'bin'
+
+        path = self.tempdirpath + "/" + beamebooks_id + "." + ext
+        if os.path.exists(path) == False:
+            print "Have to download %s, %s, %s" % (beamebooks_id, mimetype, href)
+            self.browser.retrieve(href, path)
+
+        self.adder.add(path, beamebooks_id)

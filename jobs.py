@@ -29,8 +29,8 @@ from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownload
 from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
 
 
-def do_mirror(cpus, account, notification=lambda x, y:x):
-    print "do_mirror in jobs.py"
+def do_obtain_new_books(cpus, account, notification=lambda x, y:x):
+    print "do_obtain_new_books in jobs.py"
 
     print "Account is: %s" % (account)
 
@@ -84,6 +84,11 @@ def do_mirror(cpus, account, notification=lambda x, y:x):
     result = (new_ebooks)
 
     return result
+
+
+def do_download_book(cpus, entry, notification=lambda x, y:x):
+    print "do_download_book in jobs.py"
+    print "Entry: %s" % (entry)
 
 
 class ConsoleReporter(object):

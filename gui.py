@@ -117,7 +117,7 @@ class DownloadDialog(QDialog):
         # func = 'arbitrary'
         cpus = self.gui.job_manager.server.pool_size
         print "CPUs: %s" % (cpus)
-        args = ['calibre_plugins.beam_ebooks_downloader.jobs', 'do_mirror', (cpus, account)]
+        args = ['calibre_plugins.beam_ebooks_downloader.jobs', 'do_obtain_new_books', (cpus, account)]
         desc = 'Beam EBooks Downloader'
         job = self.gui.job_manager.run_job(Dispatcher(self._done), func, args=args, description=desc)
         print "Job: %s" % (job)
@@ -156,6 +156,15 @@ class DownloadDialog(QDialog):
                     'OPDS Download Log', 'OPDS parse complete', msg, show_copy_button = False)
 
 
+    def _done_2(self, job):
+        print "Done Downloading"
+        print "Self: %s" % (self)
+        print "Job: %s" % (job)
+        # print "  Result: %s" % (job.result)
+        # print "  Result: %s" % (len(job.result))
+        self.notify("  Finished download book...")
+
+
     def _add_ebooks(self, payload):
         print "Done Downloading, Step 2"
         print "Self: %s" % (self)
@@ -164,3 +173,13 @@ class DownloadDialog(QDialog):
         self.notify("  Finished adding books...")
         for entry in payload:
             print "Entry: %s" % entry
+
+            # TODO allow for checkbox list of entries to download
+            func = 'arbitrary_n'
+            # func = 'arbitrary'
+            cpus = self.gui.job_manager.server.pool_size
+            print "CPUs: %s" % (cpus)
+            args = ['calibre_plugins.beam_ebooks_downloader.jobs', 'do_download_book', (cpus, entry)]
+            desc = 'Beam EBooks Downloader'
+            job = self.gui.job_manager.run_job(Dispatcher(self._done_2), func, args=args, description=desc)
+            print "Job: %s" % (job)
