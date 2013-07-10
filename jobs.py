@@ -24,6 +24,7 @@ __docformat__ = 'restructuredtext en'
 
 
 from calibre_plugins.beam_ebooks_downloader.prefs import PrefsFacade
+from calibre_plugins.beam_ebooks_downloader.adder import EBookAdder
 from calibre_plugins.beam_ebooks_downloader.downloader import BeamEbooksDownloader
 from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
 
@@ -66,8 +67,22 @@ def do_mirror(cpus, account, notification=lambda x, y:x):
             # Now, download the obtained ebooks...
 
     notification(1.00, "Done...")
-    result = (downloadable_ebooks)
-    # result = "Tralala"
+
+    adder = EBookAdder(prefs, "beam-ebooks")
+
+    adder.load_books()
+
+    new_ebooks = []
+
+    for entry in downloadable_ebooks:
+        beamebooks_id = entry['id']
+
+        book = adder.books_of_this_shop.get(beamebooks_id)
+        if book is None:
+            new_ebooks.append(entry)
+
+    result = (new_ebooks)
+
     return result
 
 
