@@ -303,8 +303,6 @@ class BeamEbooksDownloader():
     # Now, mirror all ebooks encountered in the loop above
     def download_ebooks(self):
 
-        return None
-
         print "Library id is (%s)" % (self.prefs.get_library_uuid())
 
         db = self.prefs._get_db()
