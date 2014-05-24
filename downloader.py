@@ -28,7 +28,7 @@ import os
 import sys
 import tempfile
 import re
-from calibre.ebooks.BeautifulSoup import BeautifulSoup
+from lxml.html import fromstring, tostring
 from calibre import browser
 from calibre_plugins.beam_ebooks_downloader.adder import EBookAdder
 from calibre_plugins.beam_ebooks_downloader.urlnorm import norms
@@ -83,10 +83,6 @@ class BeamEbooksDownloader():
             content = response.get_data()
             f.write("Content: '%s'" % (content))
             f.write("\n\n")
-
-            # soup = BeautifulSoup(self.browser.html)
-            # print "New Soup: '%s'" % (soup)
-            # f.write("\n\n")
 
             f.close()
         except:
@@ -194,8 +190,6 @@ class BeamEbooksDownloader():
         self.save_response(response)
         
         content = response.get_data()
-        soup = BeautifulSoup(content)
-        # print "Soup: '%s'" % (soup)
 
         links_to_visit = []
 
@@ -203,15 +197,16 @@ class BeamEbooksDownloader():
             print "Something horrible happened (RC %s)" % (response.code)
             pass
 
-        entrylist = soup.findAll('entry')
+        root = fromstring(content)
+
+        entrylist = root.xpath("//entry")
         for entry in entrylist:
-            # print "  Entry: '%s'" % (entry)
-            # print "\n"
-            idtag = entry.find('id')
+            # print "  Entry: '%s'" % (tostring(entry, pretty_print=True).strip())
+            idtag = entry.xpath('id')[0]
             if idtag is not None:
-                # First element of list...
-                contents = idtag.contents[0]
-                print "    Id: '%s' / '%s'" % (idtag, contents)
+                # print "  Id: '%s'\n" % (tostring(idtag, pretty_print=True).strip())
+                contents = idtag.text_content()
+                # print "    Id content: '%s' / '%s'" % (idtag, contents)
 
                 match = re.match('urn:beam-ebooks:private', contents)
                 if match:
@@ -260,10 +255,11 @@ class BeamEbooksDownloader():
         return links_to_visit
 
     def extract_link(self, entry):
-        linklist = entry.findAll('link', href = True, type = True)
+        linklist = entry.xpath("link")
         for link in linklist:
-            href = link['href']
-            mimetype = link['type']
+            # print "      Link: '%s'" % (tostring(link, pretty_print=True).strip())
+            href = link.attrib['href']
+            mimetype = link.attrib['type']
 
             match = re.search('^image\/.*', mimetype)
             if match:
@@ -306,6 +302,8 @@ class BeamEbooksDownloader():
 
     # Now, mirror all ebooks encountered in the loop above
     def download_ebooks(self):
+
+        return None
 
         print "Library id is (%s)" % (self.prefs.get_library_uuid())
 

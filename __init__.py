@@ -39,7 +39,7 @@ class Downloader(InterfaceActionBase):
     author = 'Hakan Tandogan'
     can_be_disabled = True
 
-    version = (0, 6, 0)
+    version = (0, 7, 0)
 
     # Minium is 0.9.23 for the CLI support from this version on
     minimum_calibre_version = (0, 9, 23)
