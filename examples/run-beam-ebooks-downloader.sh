@@ -1,4 +1,3 @@
-
 #! /bin/sh -x
 
 export CALIBRE_DEVELOP_FROM=${HOME}/github/calibre/src
