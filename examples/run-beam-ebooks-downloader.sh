@@ -1,3 +1,4 @@
+
 #! /bin/sh -x
 
 export CALIBRE_DEVELOP_FROM=${HOME}/github/calibre/src
@@ -17,6 +18,20 @@ calibre-debug \
     --run-plugin "Beam EBooks Downloader" \
     > ${LOGDIR}/stdout.txt \
     2> ${LOGDIR}/stderr.txt
+
+
+pushd /tmp/calibre-beam-ebooks-downloader-plugin/
+for f in *.epub
+do
+    if [ -f ${f} ]
+    then
+	if [ "${f}" != "999978060.epub" ]
+	then
+	    ~/pushbullet-bash/pushbullet push GT-I9505 file ${f}
+	fi
+    fi
+done
+popd
 
 mv /tmp/calibre-beam-ebooks-downloader-plugin ${LOGDIR}
 
